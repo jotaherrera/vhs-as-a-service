@@ -1,0 +1,15 @@
+[project]
+name = "pluto"
+version = "0.1.0"
+description = "Managing personal finance through a REST API"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.121.2",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "ruff>=0.14.5",
+]
