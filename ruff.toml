@@ -4,7 +4,7 @@ indent-width = 4
 
 [lint]
 select = ["ALL"]
-ignore = ["D100"]
+ignore = ["D100", "D101", "D102", "D103"]
 fixable = ["ALL"]
 unfixable = []
 
