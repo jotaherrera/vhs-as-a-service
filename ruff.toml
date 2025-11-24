@@ -1,0 +1,15 @@
+cache-dir = ".ruff_cache"
+line-length = 100
+indent-width = 4
+
+[lint]
+select = ["ALL"]
+ignore = ["D100"]
+fixable = ["ALL"]
+unfixable = []
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
