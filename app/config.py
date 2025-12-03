@@ -1,11 +1,9 @@
-from pydantic import Field
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine.url import URL
 
 
-class DatabaseSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="DB_", env_file=".env")
-
+class DatabaseSettings(BaseModel):
     name: str
     user: str
     password: str
@@ -25,11 +23,16 @@ class DatabaseSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="APP_", env_file=".env")
+    model_config = SettingsConfigDict(
+        env_nested_delimiter="__",
+        env_file=".env",
+        extra="ignore",
+    )
 
     app_name: str = "pluto"
-    debug: bool = False
+    app_debug: bool = False
 
-    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
+    database: DatabaseSettings
+
 
 SETTINGS = Settings()
