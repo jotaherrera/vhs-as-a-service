@@ -5,6 +5,7 @@ description = "Managing personal finance through a REST API"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "alembic>=1.17.2",
     "fastapi[standard]>=0.121.2",
     "psycopg2-binary>=2.9.11",
     "pydantic-settings>=2.12.0",
