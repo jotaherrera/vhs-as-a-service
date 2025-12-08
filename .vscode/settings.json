@@ -12,5 +12,14 @@
     "ruff.organizeImports": true,
     "ruff.lineLength": 100,
     "ruff.enable": true,
-    "ruff.lint.enable": true
+    "ruff.lint.enable": true,
+    "python.testing.pytestArgs": [
+        "tests",
+        "-vv",
+        "--asyncio-mode=auto",
+        "--showlocals",
+        "--strict-markers"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
