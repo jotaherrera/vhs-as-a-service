@@ -10,6 +10,7 @@ unfixable = []
 
 [lint.per-file-ignores]
 "test_*.py" = ["S101"]
+"**/migrations/**" = ["N999"]
 
 [format]
 quote-style = "double"
