@@ -28,4 +28,5 @@
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
+    "mypy-type-checker.importStrategy": "fromEnvironment"
 }
