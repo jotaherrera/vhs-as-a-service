@@ -23,3 +23,15 @@ repos:
         entry: ruff format
         language: system
         types: [python]
+
+      - id: shfmt
+        name: shfmt
+        entry: shfmt -i 2 -ci -sr -w
+        language: system
+        types: [shell]
+
+      - id: shellcheck
+        name: shellcheck
+        entry: shellcheck -x
+        language: system
+        types: [shell]

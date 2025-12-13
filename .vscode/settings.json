@@ -9,6 +9,10 @@
         "editor.tabSize": 4,
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
+    "[shellscript]": {
+        "editor.defaultFormatter": "mkhl.shfmt",
+        "editor.formatOnSave": true
+    },
     "ruff.organizeImports": true,
     "ruff.lineLength": 100,
     "ruff.enable": true,
@@ -28,5 +32,8 @@
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
-    "mypy-type-checker.importStrategy": "fromEnvironment"
+    "mypy-type-checker.importStrategy": "fromEnvironment",
+    "shfmt.executablePath": ".venv/bin/shfmt",
+    "bashIde.shellcheckPath": ".venv/bin/shellcheck",
+    "shfmt.executableArgs": ["-bn", "-ci", "-i", "2", "-s", "-sr"]
 }
