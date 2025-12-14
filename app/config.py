@@ -35,4 +35,4 @@ class Settings(BaseSettings):
     database: DatabaseSettings
 
 
-SETTINGS = Settings()
+settings = Settings()

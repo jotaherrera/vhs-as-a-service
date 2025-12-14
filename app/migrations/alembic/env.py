@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from app.config import SETTINGS
+from app.config import settings
 from app.models.base import Base
 
 # this is the Alembic Config object, which provides
@@ -20,7 +20,7 @@ target_metadata = Base.metadata
 # other values from the config, defined by the needs of env.py,
 config.set_main_option(
     "sqlalchemy.url",
-    SETTINGS.database.connection_url.render_as_string(hide_password=False),
+    settings.database.connection_url.render_as_string(hide_password=False),
 )
 
 
