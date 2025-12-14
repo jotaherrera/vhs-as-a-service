@@ -1,27 +1,30 @@
 #!/bin/bash
 
 function create_file_safe() {
-  local file status
-  file="$1"
+  local migration_file status
+  migration_file="$1"
 
   set -o noclobber
-  : > "$file" 2> /dev/null
+  : > "$migration_file" 2> /dev/null
   status=$?
   set +o noclobber
 
   if [ $status -ne 0 ]; then
-    echo "Error: $file already exists"
+    echo "Error: $migration_file already exists"
     return 1
   fi
 }
 
 function create_migration() {
-  local timestamp name filename path
+  local timestamp file_name path migration_folder migration_name
+
+  migration_folder="$1"
+  migration_name="$2"
 
   timestamp=$(date +%Y_%m_%d_%H%M)
-  name="$1"
-  filename="${timestamp}_${name}.py"
-  path="app/migrations/data/${filename}"
+
+  file_name="${timestamp}_${migration_name}.py"
+  path="app/migrations/${migration_folder}/${file_name}"
 
   create_file_safe "$path" || exit 1
 
@@ -38,16 +41,17 @@ EOF
 }
 
 function main() {
-  local name
+  local migration_folder migration_name
 
-  name="$1"
+  migration_folder="$1"
+  migration_name="$2"
 
-  if [ $# -ne 1 ]; then
-    echo "Usage: $0 <migration_name>"
+  if [ $# -ne 2 ]; then
+    echo "Usage: $0 <migration_folder> <migration_name>"
     exit 1
   fi
 
-  create_migration "$name"
+  create_migration "$migration_folder" "$migration_name"
 }
 
 main "$@"
