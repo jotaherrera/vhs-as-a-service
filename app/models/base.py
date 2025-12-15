@@ -9,5 +9,5 @@ convention = {
     "pk": "pk_%(table_name)s",
 }
 
-metadata = MetaData(naming_convention=convention)
+metadata = MetaData(schema="app", naming_convention=convention)
 Base = declarative_base(metadata=metadata)

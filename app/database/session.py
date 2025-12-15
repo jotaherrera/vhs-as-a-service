@@ -12,6 +12,9 @@ engine = create_engine(
     settings.database.connection_url,
     pool_pre_ping=True,
     echo=settings.app_debug,
+    connect_args={
+        "options": "-c search_path=app,public",
+    },
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
