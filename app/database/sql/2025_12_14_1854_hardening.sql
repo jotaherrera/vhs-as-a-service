@@ -1,0 +1,6 @@
+-- Create app schema
+CREATE SCHEMA IF NOT EXISTS app AUTHORIZATION ${DATABASE__USER};
+
+-- Hardening of public schema
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
