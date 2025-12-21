@@ -1,7 +1,8 @@
+import configparser
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, text
 
 from app.config import settings
 from app.models import Base
@@ -9,6 +10,13 @@ from app.models import Base
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+
+if hasattr(config, "file_config") and config.file_config is not None:
+    raw_config = configparser.RawConfigParser()
+    if config.config_file_name:
+        raw_config.read(config.config_file_name)
+    config.file_config = raw_config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -68,6 +76,8 @@ def run_migrations_online() -> None:
             version_table_schema="app",
             include_schemas=True,
         )
+
+        connection.execute(text("SET search_path TO app"))
 
         with context.begin_transaction():
             context.run_migrations()
