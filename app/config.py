@@ -3,12 +3,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine.url import URL
 
 
+class AppSettings(BaseModel):
+    name: str = "pluto"
+    debug: bool = False
+    version: str = "0.1.0"
+
+
 class DatabaseSettings(BaseModel):
     name: str
     user: str
     password: str
     host: str = "localhost"
     port: int = 5432
+    container_name: str
 
     @property
     def connection_url(self) -> URL:
@@ -29,9 +36,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "pluto"
-    app_debug: bool = False
-
+    app: AppSettings
     database: DatabaseSettings
 
 
