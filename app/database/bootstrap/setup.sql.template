@@ -1,0 +1,28 @@
+-- Create application schema
+CREATE SCHEMA IF NOT EXISTS app;
+
+-- Revoke public schema access
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+
+-- -----------------------------------------------------------------------------
+-- app_owner: Migration/DDL user
+-- -----------------------------------------------------------------------------
+CREATE USER app_owner WITH PASSWORD '${DATABASE__APP_OWNER_PASSWORD}';
+GRANT ALL PRIVILEGES ON SCHEMA app TO app_owner;
+
+-- -----------------------------------------------------------------------------
+-- app_user: Runtime/DML user
+-- -----------------------------------------------------------------------------
+CREATE USER app_user WITH PASSWORD '${DATABASE__APP_USER_PASSWORD}';
+GRANT CONNECT ON DATABASE ${DATABASE__NAME} TO app_user;
+GRANT USAGE ON SCHEMA app TO app_user;
+
+-- Current objects
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA app TO app_user;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA app TO app_user;
+
+-- Future objects
+ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app
+  GRANT USAGE, SELECT ON SEQUENCES TO app_user;
