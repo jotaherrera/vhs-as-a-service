@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: pluto
+      POSTGRES_PASSWORD: ${DATABASE__PASSWORD}
+
+    ports:
+      - "${DATABASE__PORT}:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./app/database/bootstrap/setup.sql:/docker-entrypoint-initdb.d/setup.sql:ro
+
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
