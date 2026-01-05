@@ -10,12 +10,11 @@ class AppSettings(BaseModel):
 
 
 class DatabaseSettings(BaseModel):
-    name: str
+    name: str = "pluto"
     user: str
     password: str
     host: str = "localhost"
     port: int = 5432
-    container_name: str
 
     @property
     def connection_url(self) -> URL:
