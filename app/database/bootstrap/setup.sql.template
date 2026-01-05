@@ -7,13 +7,13 @@ REVOKE ALL ON SCHEMA public FROM PUBLIC;
 -- -----------------------------------------------------------------------------
 -- app_owner: Migration/DDL user
 -- -----------------------------------------------------------------------------
-CREATE USER app_owner WITH PASSWORD '${DATABASE__OWNER_PASSWORD}';
+CREATE USER app_owner WITH PASSWORD '${DATABASE__APP_OWNER_PASSWORD}';
 GRANT ALL PRIVILEGES ON SCHEMA app TO app_owner;
 
 -- -----------------------------------------------------------------------------
 -- app_user: Runtime/DML user
 -- -----------------------------------------------------------------------------
-CREATE USER app_user WITH PASSWORD '${DATABASE__USER_PASSWORD}';
+CREATE USER app_user WITH PASSWORD '${DATABASE__APP_USER_PASSWORD}';
 GRANT CONNECT ON DATABASE pluto TO app_user;
 GRANT USAGE ON SCHEMA app TO app_user;
 
