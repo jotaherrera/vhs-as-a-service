@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
 from sqlalchemy.orm import relationship
 
@@ -6,6 +8,7 @@ from app.models import Base
 
 class Role(Base):
     __tablename__ = "roles"
+    __table_args__: ClassVar[dict[str, str]] = {"schema": "app"}
 
     id = Column(Integer, primary_key=True)
 

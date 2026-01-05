@@ -15,12 +15,7 @@ def get_user_by_email(db: Session, email: str) -> User | None:
 
 def create_user(db: Session, user: UserCreate) -> UserResponse:
     hashed_password = hash_password(user.password)
-    db_user = User(
-        email=user.email,
-        password=hashed_password,
-        name=user.name,
-        last_name=user.last_name,
-    )
+    db_user = User(**user.model_dump(exclude={"password"}), password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
