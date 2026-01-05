@@ -1,4 +1,6 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
+from typing import ClassVar
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
 from app.models import Base
@@ -6,6 +8,7 @@ from app.models import Base
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__: ClassVar[dict[str, str]] = {"schema": "app"}
 
     id = Column(Integer, primary_key=True)
 
@@ -23,6 +26,8 @@ class User(Base):
         onupdate=func.now,
         nullable=False,
     )
+
+    is_active = Column(Boolean, nullable=False)
 
     role = relationship("Role", back_populates="users")
 

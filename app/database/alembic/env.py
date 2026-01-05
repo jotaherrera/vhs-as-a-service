@@ -2,7 +2,7 @@ import configparser
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool, text
+from sqlalchemy import engine_from_config, pool
 
 from app.config import settings
 from app.models import Base
@@ -50,6 +50,8 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        version_table_schema="app",
+        include_schemas=True,
     )
 
     with context.begin_transaction():
@@ -76,8 +78,6 @@ def run_migrations_online() -> None:
             version_table_schema="app",
             include_schemas=True,
         )
-
-        connection.execute(text("SET search_path TO app"))
 
         with context.begin_transaction():
             context.run_migrations()

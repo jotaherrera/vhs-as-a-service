@@ -13,9 +13,7 @@ def get_role_by_id(db: Session, role_id: int) -> Role | None:
 
 
 def create_role(db: Session, role: RoleCreate) -> RoleResponse:
-    db_role = Role(
-        name=role.name,
-    )
+    db_role = Role(**role.model_dump())
     db.add(db_role)
     db.commit()
     db.refresh(db_role)
