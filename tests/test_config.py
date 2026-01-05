@@ -5,15 +5,15 @@ from app.config import Settings
 
 def test_settings_loads_app_env_vars() -> None:
     with pytest.MonkeyPatch.context() as mp:
-        mp.setenv("APP_NAME", "test_app")
-        mp.setenv("APP_DEBUG", "true")
-        mp.setenv("APP_VERSION", "1.0.0")
+        mp.setenv("APP__NAME", "test_app")
+        mp.setenv("APP__DEBUG", "true")
+        mp.setenv("APP__VERSION", "1.0.0")
 
         settings = Settings()
 
-    assert settings.app_name == "test_app"
-    assert settings.app_debug is True
-    assert settings.app_version == "1.0.0"
+    assert settings.app.name == "test_app"
+    assert settings.app.debug is True
+    assert settings.app.version == "1.0.0"
 
 
 def test_settings_loads_db_env_vars() -> None:

@@ -11,7 +11,7 @@ from app.config import settings
 engine = create_engine(
     settings.database.connection_url,
     pool_pre_ping=True,
-    echo=settings.app_debug,
+    echo=settings.app.debug,
     connect_args={
         "options": "-c search_path=app,public",
     },
