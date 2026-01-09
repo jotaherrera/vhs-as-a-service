@@ -1,6 +1,6 @@
 import logging
 
-from app.database.session import get_db
+from app.database.session import SessionLocal
 from app.operations import role as crud_role
 from app.schemas.role import RoleCreate
 
@@ -13,7 +13,8 @@ def create_roles() -> None:
         RoleCreate(name="user"),
     ]
 
-    with get_db() as db:
+    db = SessionLocal()
+    try:
         for role in roles:
             existing_role = crud_role.get_role_by_name(db, role.name)
             if existing_role:
@@ -22,3 +23,5 @@ def create_roles() -> None:
                 continue
 
             crud_role.create_role(db, role)
+    finally:
+        db.close()

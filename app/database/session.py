@@ -1,5 +1,4 @@
 from collections.abc import Generator
-from contextlib import contextmanager
 from typing import Annotated
 
 from fastapi import Depends
@@ -20,7 +19,6 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@contextmanager
 def get_db() -> Generator[Session]:
     db = SessionLocal()
     try:
