@@ -5,6 +5,10 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
 
 
+def get_all_users(db: Session) -> list[User]:
+    return db.query(User).all()
+
+
 def get_user_by_id(db: Session, user_id: int) -> User | None:
     return db.query(User).filter(User.id == user_id).first()
 
