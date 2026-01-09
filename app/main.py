@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 
 from app.config import Settings, get_settings
+from app.routers import user_router
 
 settings = get_settings()
 
@@ -11,6 +12,8 @@ app = FastAPI(
     version=settings.app.version,
     debug=settings.app.debug,
 )
+
+app.include_router(user_router)
 
 
 @app.get("/health")
