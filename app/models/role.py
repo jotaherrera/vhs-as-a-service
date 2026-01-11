@@ -1,7 +1,7 @@
 from typing import ClassVar
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, DateTime, Integer, String, func
+from sqlalchemy.orm import MappedColumn, mapped_column, relationship
 
 from app.models import Base
 
@@ -10,23 +10,23 @@ class Role(Base):
     __tablename__ = "roles"
     __table_args__: ClassVar[dict[str, str]] = {"schema": "app"}
 
-    id = Column(Integer, primary_key=True)
+    id: MappedColumn[int] = mapped_column(Integer, primary_key=True)
 
-    name = Column(String(255), unique=True, nullable=False)
+    name: MappedColumn[str] = mapped_column(String(255), unique=True, nullable=False)
 
-    created_at = Column(
+    created_at: MappedColumn[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
-    modified_at = Column(
+    modified_at: MappedColumn[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
     )
 
-    is_active = Column(Boolean, nullable=False)
+    is_active: MappedColumn[bool] = mapped_column(Boolean, nullable=False)
 
     users = relationship("User", back_populates="role")
 
