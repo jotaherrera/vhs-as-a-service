@@ -3,13 +3,24 @@ from typing import Annotated
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
 
-from app.core.security import decode_token
+from app.core.security import decode_token, verify_password
 from app.database.session import DbSession
 from app.exceptions import NotFoundError, UnautorizedError
 from app.models.user import User
 from app.operations import user as crud_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+def autenticate_user(db: DbSession, email: str, password: str) -> User | None:
+    db_user = crud_user.get_user_by_email(db, email)
+    if db_user is None:
+        return None
+
+    if not verify_password(password, db_user.password):
+        return None
+
+    return db_user
 
 
 def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_scheme)]) -> User:

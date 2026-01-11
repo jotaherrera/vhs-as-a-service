@@ -4,11 +4,10 @@ from typing import Literal
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-import app.operations.user as crud_user
-from app.core.security import create_access_token, verify_password
+from app.core.security import create_access_token
 from app.database.session import DbSession
+from app.dependencies.auth import autenticate_user
 from app.exceptions import UnautorizedError
-from app.models.user import User
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -23,17 +22,6 @@ class TokenRequest(BaseModel):
 class TokenResponse(BaseModel):
     token: str
     type: Literal["Bearer"]
-
-
-def autenticate_user(db: DbSession, email: str, password: str) -> User | None:
-    db_user = crud_user.get_user_by_email(db, email)
-    if db_user is None:
-        return None
-
-    if not verify_password(password, db_user.password):
-        return None
-
-    return db_user
 
 
 @router.post("/token")
