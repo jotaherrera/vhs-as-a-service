@@ -1,7 +1,7 @@
 from typing import ClassVar
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
 
@@ -10,24 +10,28 @@ class User(Base):
     __tablename__ = "users"
     __table_args__: ClassVar[dict[str, str]] = {"schema": "app"}
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
+    role_id: Mapped[int] = mapped_column(Integer, ForeignKey("roles.id"), nullable=False)
 
-    email = Column(String(255), unique=True, nullable=False)
-    password = Column(String(255), nullable=False)
-    name = Column(String(100))
-    last_name = Column(String(100))
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    modified_at = Column(
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    modified_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now,
         nullable=False,
     )
 
-    is_active = Column(Boolean, nullable=False)
+    is_active: Mapped[Boolean] = mapped_column(Boolean, nullable=False)
 
     role = relationship("Role", back_populates="users")
 
