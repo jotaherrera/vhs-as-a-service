@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 
 from app.config import Settings, get_settings
-from app.routers import user_router
+from app.routers import token_router, user_router
 
 settings = get_settings()
 
@@ -13,6 +13,7 @@ app = FastAPI(
     debug=settings.app.debug,
 )
 
+app.include_router(token_router)
 app.include_router(user_router)
 
 
