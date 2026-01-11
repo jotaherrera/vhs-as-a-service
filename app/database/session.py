@@ -7,12 +7,10 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import get_settings
 
-settings = get_settings()
-
 engine = create_engine(
-    settings.database.connection_url,
+    url=get_settings().database.connection_url,
     pool_pre_ping=True,
-    echo=settings.app.debug,
+    echo=get_settings().app.debug,
     connect_args={
         "options": "-c search_path=app,public",
     },
