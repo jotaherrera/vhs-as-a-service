@@ -6,12 +6,10 @@ from app.config import Settings, get_settings
 from app.handlers import add_exception_handlers
 from app.routers import token_router, user_router
 
-settings = get_settings()
-
 app = FastAPI(
-    title=settings.app.name,
-    version=settings.app.version,
-    debug=settings.app.debug,
+    title=get_settings().app.name,
+    version=get_settings().app.version,
+    debug=get_settings().app.debug,
 )
 
 add_exception_handlers(app)
