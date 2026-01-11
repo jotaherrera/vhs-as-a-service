@@ -5,7 +5,7 @@ from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.main import get_settings
+from app.config import get_settings
 
 settings = get_settings()
 
