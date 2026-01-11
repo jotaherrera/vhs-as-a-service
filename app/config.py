@@ -9,6 +9,7 @@ class AppSettings(BaseModel):
     name: str = "pluto"
     debug: bool = False
     version: str = "0.1.0"
+    jwt_secret: str
 
 
 class DatabaseSettings(BaseModel):
