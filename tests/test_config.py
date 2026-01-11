@@ -9,7 +9,7 @@ def test_settings_loads_app_env_vars() -> None:
         mp.setenv("APP__DEBUG", "true")
         mp.setenv("APP__VERSION", "1.0.0")
 
-        settings = Settings()
+        settings = Settings()  # ty:ignore[missing-argument]
 
     assert settings.app.name == "test_app"
     assert settings.app.debug is True
@@ -24,7 +24,7 @@ def test_settings_loads_db_env_vars() -> None:
         mp.setenv("DATABASE__HOST", "test_host")
         mp.setenv("DATABASE__PORT", "123")
 
-        settings = Settings()
+        settings = Settings()  # ty:ignore[missing-argument]
 
     assert settings.database.name == "test_db"
     assert settings.database.user == "test_user"

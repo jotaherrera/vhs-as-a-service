@@ -28,5 +28,6 @@ async def get_all_users(
         raise ForbidenError(detail="Not authorized to perform this action")
 
     users = crud_user.get_all_users(db)
+    users_response = [UserResponse.model_validate(user) for user in users]
 
-    return AllUsersResponse(users=users, total=len(users))
+    return AllUsersResponse(users=users_response, total=len(users))

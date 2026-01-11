@@ -18,11 +18,10 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Install uv
-        run: pip install uv
-
       - name: Install dependencies
-        run: uv sync
+        run: |
+          pip install uv
+          uv sync
 
       - name: Run pytest
         run: uv run pytest
@@ -39,13 +38,14 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Install uv
-        run: pip install uv
-
       - name: Install dependencies
-        run: uv sync
+        run: |
+          pip install uv
+          uv sync
 
       - name: Run linters
         run: |
+          uv run deptry .
           uv run ruff format --check
           uv run ruff check
+          uv run ty check .
