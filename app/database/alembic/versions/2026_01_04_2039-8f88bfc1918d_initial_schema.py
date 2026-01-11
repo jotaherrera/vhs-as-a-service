@@ -48,8 +48,8 @@ def upgrade() -> None:
         sa.Column("role_id", sa.Integer(), nullable=False),
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("password", sa.String(length=255), nullable=False),
-        sa.Column("name", sa.String(length=100), nullable=True),
-        sa.Column("last_name", sa.String(length=100), nullable=True),
+        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.Column("last_name", sa.String(length=100), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
