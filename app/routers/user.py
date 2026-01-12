@@ -37,3 +37,31 @@ async def create_user(db: DbSession, user_request: UserCreatePublic) -> UserResp
     user = UserCreateInternal(**user_request.model_dump(exclude={"role"}), role_id=db_role.id)
 
     return UserResponse.model_validate(crud_user.create_user(db, user))
+
+
+@router.get("/users/me")
+async def get_own_user(
+    db: DbSession,
+    current_user: Annotated[User, Depends(get_current_active_user)],
+) -> UserResponse:
+    user = crud_user.get_user_by_id(db, current_user.id)
+    if user is None:
+        raise NotFoundError(detail="User not found")
+
+    return UserResponse.model_validate(user)
+
+
+@router.get("/users/{user_id}")
+async def get_user(
+    db: DbSession,
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    user_id: int,
+) -> UserResponse:
+    if current_user.id != user_id and current_user.role.name != "admin":
+        raise ForbidenError(detail="Not authorized to perform this action")
+
+    user = crud_user.get_user_by_id(db, int(user_id))
+    if not user:
+        raise NotFoundError(detail="User not found")
+
+    return UserResponse.model_validate(user)
