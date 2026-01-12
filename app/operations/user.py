@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.models.user import User
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreateInternal, UserResponse
 
 
 def get_all_users(db: Session) -> list[User]:
@@ -17,7 +17,7 @@ def get_user_by_email(db: Session, email: str) -> User | None:
     return db.query(User).filter(User.email == email).first()
 
 
-def create_user(db: Session, user: UserCreate) -> UserResponse:
+def create_user(db: Session, user: UserCreateInternal) -> UserResponse:
     hashed_password = hash_password(user.password)
     db_user = User(**user.model_dump(exclude={"password"}), password=hashed_password)
     db.add(db_user)
