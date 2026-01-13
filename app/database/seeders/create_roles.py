@@ -1,8 +1,8 @@
 import logging
 
 from app.database.session import SessionLocal
-from app.operations import role as crud_role
-from app.schemas.role import RoleCreate
+from app.operations.role import crud as crud_role
+from app.operations.role.schemas import RoleCreate
 
 LOGGER = logging.getLogger(__name__)
 

@@ -3,13 +3,14 @@ from typing import Annotated
 from fastapi import APIRouter, status
 from fastapi.params import Depends
 
+from app.api.v1.schemas.user import UserCreateRequest, UserResponse, UsersResponse
 from app.database.session import DbSession
 from app.dependencies.auth import get_current_active_user
 from app.exceptions import ForbidenError, NotFoundError
 from app.models.user import User
-from app.operations import role as crud_role
-from app.operations import user as crud_user
-from app.schemas.user import UserCreateInternal, UserCreatePublic, UserResponse, UsersResponse
+from app.operations.role import crud as crud_role
+from app.operations.user import crud as crud_user
+from app.operations.user.schemas import UserCreate
 
 router = APIRouter()
 
@@ -29,12 +30,12 @@ async def list_users(
 
 
 @router.post("/users", status_code=status.HTTP_201_CREATED)
-async def create_user(db: DbSession, user_request: UserCreatePublic) -> UserResponse:
+async def create_user(db: DbSession, user_request: UserCreateRequest) -> UserResponse:
     db_role = crud_role.get_role_by_name(db, user_request.role)
     if db_role is None:
         raise NotFoundError(detail="Role not found")
 
-    user = UserCreateInternal(**user_request.model_dump(exclude={"role"}), role_id=db_role.id)
+    user = UserCreate(**user_request.model_dump(exclude={"role"}), role_id=db_role.id)
 
     return UserResponse.model_validate(crud_user.create_user(db, user))
 

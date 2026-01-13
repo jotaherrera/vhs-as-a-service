@@ -2,9 +2,9 @@ import logging
 import os
 
 from app.database.session import SessionLocal
-from app.operations import role as crud_role
-from app.operations import user as crud_user
-from app.schemas.user import UserCreateInternal
+from app.operations.role import crud as crud_role
+from app.operations.user import crud as crud_user
+from app.operations.user.schemas import UserCreate
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def create_super_user() -> None:
 
         admin_role_id = admin_role.id
 
-        user = UserCreateInternal(
+        user = UserCreate(
             email=email,
             password=password,
             name=name,

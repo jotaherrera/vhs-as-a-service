@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models import Role
-from app.schemas.role import RoleCreate, RoleResponse
+from app.operations.role.schemas import RoleCreate, RoleResponse
 
 
 def get_role_by_name(db: Session, name: str) -> Role | None:
