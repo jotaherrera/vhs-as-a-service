@@ -10,10 +10,10 @@ from app.exceptions import UnautorizedError
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-router = APIRouter()
+router = APIRouter(prefix="/token", tags=["token"])
 
 
-@router.post("/token")
+@router.post("/")
 async def get_access_token(db: DbSession, login_request: TokenRequest) -> TokenResponse:
     user = autenticate_user(db, login_request.email, login_request.password)
     if user is None:

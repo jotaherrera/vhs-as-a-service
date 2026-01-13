@@ -12,10 +12,10 @@ from app.operations.role import crud as crud_role
 from app.operations.user import crud as crud_user
 from app.operations.user.schemas import UserCreate
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/users")
+@router.get("/")
 async def list_users(
     db: DbSession,
     current_user: Annotated[User, Depends(get_current_active_user)],
@@ -29,7 +29,7 @@ async def list_users(
     return UsersResponse(users=users_response, total=len(users))
 
 
-@router.post("/users", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(db: DbSession, user_request: UserCreateRequest) -> UserResponse:
     db_role = crud_role.get_role_by_name(db, user_request.role)
     if db_role is None:
@@ -40,7 +40,7 @@ async def create_user(db: DbSession, user_request: UserCreateRequest) -> UserRes
     return UserResponse.model_validate(crud_user.create_user(db, user))
 
 
-@router.get("/users/me")
+@router.get("/me")
 async def get_own_user(
     db: DbSession,
     current_user: Annotated[User, Depends(get_current_active_user)],
@@ -52,7 +52,7 @@ async def get_own_user(
     return UserResponse.model_validate(user)
 
 
-@router.get("/users/{user_id}")
+@router.get("/{user_id}")
 async def get_user(
     db: DbSession,
     current_user: Annotated[User, Depends(get_current_active_user)],
