@@ -1,9 +1,8 @@
 from datetime import timedelta
-from typing import Literal
 
 from fastapi import APIRouter
-from pydantic import BaseModel
 
+from app.api.v1.schemas.router import TokenRequest, TokenResponse
 from app.core.security import create_access_token
 from app.database.session import DbSession
 from app.dependencies.auth import autenticate_user
@@ -12,16 +11,6 @@ from app.exceptions import UnautorizedError
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 router = APIRouter()
-
-
-class TokenRequest(BaseModel):
-    email: str
-    password: str
-
-
-class TokenResponse(BaseModel):
-    token: str
-    type: Literal["Bearer"]
 
 
 @router.post("/token")

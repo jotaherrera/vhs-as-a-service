@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI
 
+from app.api.v1 import v1_router
 from app.config import Settings, get_settings
 from app.handlers import add_exception_handlers
-from app.routers import token_router, user_router
 
 app = FastAPI(
     title=get_settings().app.name,
@@ -14,8 +14,7 @@ app = FastAPI(
 
 add_exception_handlers(app)
 
-app.include_router(token_router)
-app.include_router(user_router)
+app.include_router(v1_router)
 
 
 @app.get("/health")
