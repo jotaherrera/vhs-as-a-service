@@ -20,7 +20,7 @@ class DatabaseSettings(BaseModel):
     port: int = 5432
 
     @property
-    def connection_url(self) -> URL:
+    def url(self) -> URL:
         return URL.create(
             drivername="postgresql",
             username=self.user,
@@ -34,7 +34,7 @@ class DatabaseSettings(BaseModel):
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
-        env_file=("env", ".env.test"),
+        env_file=(".env", ".env.test"),
         extra="ignore",
     )
 
