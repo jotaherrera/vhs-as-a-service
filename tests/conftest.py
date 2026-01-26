@@ -11,6 +11,8 @@ from testcontainers.postgres import PostgresContainer
 
 from app.database.session import get_db
 from app.main import app
+from tests.factories.role import RoleFactory
+from tests.factories.user import UserFactory
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 ALEMBIC_INI_PATH = BASE_DIR / "alembic.ini"
@@ -99,7 +101,13 @@ def db_session(
 
 
 @pytest.fixture
-def db_client(db_session: Session) -> Generator[TestClient]:
+def setup_factories(db_session: Session) -> None:
+    RoleFactory._meta.sqlalchemy_session = db_session  # ty: ignore[invalid-assignment]  # noqa: SLF001
+    UserFactory._meta.sqlalchemy_session = db_session  # ty: ignore[invalid-assignment] # noqa: SLF001
+
+
+@pytest.fixture
+def db_client(db_session: Session, setup_factories: None) -> Generator[TestClient]:  # noqa: ARG001
     def override_get_db() -> Generator[Session]:
         yield db_session
 

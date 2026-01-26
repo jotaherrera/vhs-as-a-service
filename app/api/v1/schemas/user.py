@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.operations.user.schemas import UserBase, UserCreateBase
 
@@ -12,8 +12,7 @@ class UserResponse(UserBase):
     is_active: bool
     role_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreateRequest(UserCreateBase):
