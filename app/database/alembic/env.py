@@ -1,8 +1,8 @@
-import configparser
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import create_engine, pool
+from sqlalchemy.engine.url import URL
 
 from app.config import get_settings
 from app.models import Base
@@ -11,13 +11,6 @@ from app.models import Base
 # access to the values within the .ini file in use.
 config = context.config
 
-
-if hasattr(config, "file_config") and config.file_config is not None:
-    raw_config = configparser.RawConfigParser()
-    if config.config_file_name:
-        raw_config.read(config.config_file_name)
-    config.file_config = raw_config
-
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -25,11 +18,12 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-# other values from the config, defined by the needs of env.py,
-config.set_main_option(
-    "sqlalchemy.url",
-    get_settings().database.connection_url.render_as_string(hide_password=False),
-)
+
+def get_url() -> str | URL:
+    url = config.get_main_option("sqlalchemy.url")
+    if url:
+        return url
+    return get_settings().database.url
 
 
 def run_migrations_offline() -> None:
@@ -44,9 +38,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=get_url(),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -65,11 +58,7 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = create_engine(get_url(), poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
         context.configure(
