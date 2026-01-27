@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from app.core.security import decode_token, verify_password
 from app.database.session import DbSession
-from app.exceptions import NotFoundError, UnautorizedError
+from app.exceptions import NotFoundError, UnauthorizedError
 from app.models.user import User
 from app.operations.user import crud as crud_user
 
@@ -24,7 +24,7 @@ def autenticate_user(db: DbSession, email: str, password: str) -> User | None:
 
 
 def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_scheme)]) -> User:
-    credentials_exception = UnautorizedError(detail="Credentials could not be validated")
+    credentials_exception = UnauthorizedError(detail="Credentials could not be validated")
 
     payload = decode_token(token)
     user_id = payload.get("sub")
