@@ -12,7 +12,7 @@ from app.operations.user import crud as crud_user
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def autenticate_user(db: DbSession, email: str, password: str) -> User | None:
+def authenticate_user(db: DbSession, email: str, password: str) -> User | None:
     db_user = crud_user.get_user_by_email(db, email)
     if db_user is None:
         return None
