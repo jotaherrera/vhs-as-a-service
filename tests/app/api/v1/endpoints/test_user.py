@@ -38,8 +38,8 @@ def test_create_user(db_client: TestClient) -> None:
     role = RoleFactory.create(name="user")
 
     request = UserCreateRequest(
-        email="jhondoe@mail.com",
-        name="Jhon",
+        email="johndoe@mail.com",
+        name="John",
         last_name="Doe",
         password="test-password",  # noqa: S106
         role=role.name,
@@ -64,8 +64,8 @@ def test_create_user(db_client: TestClient) -> None:
 
 def test_create_user_role_not_found(db_client: TestClient) -> None:
     request = UserCreateRequest(
-        email="jhondoe@mail.com",
-        name="Jhon",
+        email="johndoe@mail.com",
+        name="John",
         last_name="Doe",
         password="test-password",  # noqa: S106
         role="not-a-role",
