@@ -7,7 +7,7 @@ from app.config import get_settings
 def test_info(simple_client: TestClient) -> None:
     response = simple_client.get("/info")
 
-    assert response.status_code is status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "app_name": get_settings().app.name,
         "app_version": get_settings().app.version,
@@ -18,5 +18,5 @@ def test_info(simple_client: TestClient) -> None:
 def test_health(simple_client: TestClient) -> None:
     response = simple_client.get("/health")
 
-    assert response.status_code is status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"status": "ok"}

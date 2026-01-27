@@ -12,7 +12,7 @@ def test_settings_loads_app_env_vars() -> None:
         settings = Settings()  # ty:ignore[missing-argument]
 
     assert settings.app.name == "test_app"
-    assert settings.app.debug is True
+    assert settings.app.debug
     assert settings.app.version == "1.0.0"
 
 
