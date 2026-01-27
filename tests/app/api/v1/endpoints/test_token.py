@@ -25,7 +25,7 @@ def test_get_access_token(db_client: TestClient) -> None:
 
 def test_get_token_unauthorized(db_client: TestClient) -> None:
     login_request = TokenRequest(
-        email="jhondoe@mail.com",
+        email="johndoe@mail.com",
         password="test-password",  # noqa: S106
     ).model_dump()
     response = db_client.post("/api/v1/token", json=login_request)
