@@ -22,7 +22,7 @@ def test_get_role_by_id(db_session: Session) -> None:
 
     assert db_role is not None
     assert db_role.id == role.id
-    assert db_role.name == db_role.name
+    assert db_role.name == role.name
 
 
 def test_create_role(db_session: Session) -> None:

@@ -58,7 +58,7 @@ def test_create_user(db_client: TestClient) -> None:
     assert user.id is not None
     assert user.created_at is not None
     assert user.modified_at is not None
-    assert user.is_active is True
+    assert user.is_active
     assert user.role_id == role.id
 
 
