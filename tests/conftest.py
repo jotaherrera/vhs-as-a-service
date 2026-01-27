@@ -92,18 +92,20 @@ def db_session(
     engine: Engine,
     test_session_local: sessionmaker[Session],
 ) -> Generator[Session]:
-    with engine.connect() as connection, connection.begin():
+    with engine.connect() as connection:
+        transaction = connection.begin()
         session = test_session_local(bind=connection)
         try:
             yield session
         finally:
+            transaction.rollback()
             session.close()
 
 
 @pytest.fixture
 def setup_factories(db_session: Session) -> None:
-    RoleFactory._meta.sqlalchemy_session = db_session  # ty: ignore[invalid-assignment]  # noqa: SLF001
-    UserFactory._meta.sqlalchemy_session = db_session  # ty: ignore[invalid-assignment] # noqa: SLF001
+    RoleFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
+    UserFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
 
 
 @pytest.fixture
