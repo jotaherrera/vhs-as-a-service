@@ -37,6 +37,7 @@ class User(Base):
 
     def __repr__(self) -> str:
         return (
-            f"User(id={self.id}, email={self.email}, name={self.name}, "
-            f"last_name={self.last_name}, role={self.role.name}), "
+            f"User(id={self.id}, email={self.email}, name={self.name}, last_name={self.last_name}, "
+            f"created_at={self.created_at}, modified_at={self.modified_at}, "
+            f"is_active={self.is_active}, role={self.role.name})"
         )
