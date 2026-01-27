@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 
 
-class UnautorizedError(HTTPException):
+class UnauthorizedError(HTTPException):
     def __init__(self, detail: str) -> None:
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -10,7 +10,7 @@ class UnautorizedError(HTTPException):
         )
 
 
-class ForbidenError(HTTPException):
+class ForbiddenError(HTTPException):
     def __init__(self, detail: str) -> None:
         super().__init__(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 

@@ -6,7 +6,7 @@ from fastapi.params import Depends
 from app.api.v1.schemas.user import UserCreateRequest, UserResponse, UsersResponse
 from app.database.session import DbSession
 from app.dependencies.auth import get_current_active_user
-from app.exceptions import ForbidenError, NotFoundError
+from app.exceptions import ForbiddenError, NotFoundError
 from app.models.user import User
 from app.operations.role import crud as crud_role
 from app.operations.user import crud as crud_user
@@ -21,7 +21,7 @@ async def list_users(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UsersResponse:
     if current_user.role.name != "admin":
-        raise ForbidenError(detail="Not authorized to perform this action")
+        raise ForbiddenError(detail="Not authorized to perform this action")
 
     users = crud_user.get_all_users(db)
     users_response = [UserResponse.model_validate(user) for user in users]
@@ -42,14 +42,9 @@ async def create_user(db: DbSession, user_request: UserCreateRequest) -> UserRes
 
 @router.get("/me")
 async def get_own_user(
-    db: DbSession,
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UserResponse:
-    user = crud_user.get_user_by_id(db, current_user.id)
-    if user is None:
-        raise NotFoundError(detail="User not found")
-
-    return UserResponse.model_validate(user)
+    return UserResponse.model_validate(current_user)
 
 
 @router.get("/{user_id}")
@@ -59,7 +54,7 @@ async def get_user(
     user_id: int,
 ) -> UserResponse:
     if current_user.id != user_id and current_user.role.name != "admin":
-        raise ForbidenError(detail="Not authorized to perform this action")
+        raise ForbiddenError(detail="Not authorized to perform this action")
 
     user = crud_user.get_user_by_id(db, int(user_id))
     if not user:

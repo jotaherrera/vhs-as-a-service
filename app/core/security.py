@@ -5,7 +5,7 @@ import jwt
 from passlib.context import CryptContext
 
 from app.config import get_settings
-from app.exceptions import UnautorizedError
+from app.exceptions import UnauthorizedError
 
 ALGORITHM = "HS256"
 DEFAULT_ACCESS_TOKEN_EXPIRE_MINUTES = 15
@@ -28,7 +28,7 @@ def decode_token(token: str) -> dict[str, Any]:
     try:
         return jwt.decode(token.strip(), key=get_settings().app.jwt_secret, algorithms=ALGORITHM)
     except jwt.InvalidTokenError as err:
-        raise UnautorizedError(detail="Could not validate credentials") from err
+        raise UnauthorizedError(detail="Could not validate credentials") from err
 
 
 def hash_password(password: str) -> str:
