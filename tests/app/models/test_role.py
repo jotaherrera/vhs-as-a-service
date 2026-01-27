@@ -1,0 +1,12 @@
+from tests.factories.role import RoleFactory
+
+
+def test_role_string_repr() -> None:
+    role = RoleFactory.build()
+
+    expected = (
+        f"Role(id={role.id}, name={role.name}, is_active={role.is_active}, "
+        f"created_at={role.created_at}, modified_at={role.modified_at})"
+    )
+
+    assert repr(role) == expected

@@ -32,6 +32,6 @@ class Role(Base):
 
     def __repr__(self) -> str:
         return (
-            f"Role(id={self.id}, name={self.name}, is_active={self.is_active})"
-            f"created_at={self.created_at}, modified_at={self.modified_at}"
+            f"Role(id={self.id}, name={self.name}, is_active={self.is_active}, "
+            f"created_at={self.created_at}, modified_at={self.modified_at})"
         )
