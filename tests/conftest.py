@@ -86,6 +86,16 @@ def test_session_local(engine: Engine) -> sessionmaker[Session]:
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+def setup_factories(db_session: Session) -> None:
+    RoleFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
+    UserFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
+
+
+def cleanup_factories() -> None:
+    RoleFactory._meta.sqlalchemy_session = None  # ty: ignore[unresolved-attribute]  # noqa: SLF001
+    UserFactory._meta.sqlalchemy_session = None  # ty: ignore[unresolved-attribute]  # noqa: SLF001
+
+
 @pytest.fixture
 def db_session(
     setup_database: None,  # noqa: ARG001
@@ -95,21 +105,17 @@ def db_session(
     with engine.connect() as connection:
         transaction = connection.begin()
         session = test_session_local(bind=connection)
+        setup_factories(session)
         try:
             yield session
         finally:
             transaction.rollback()
             session.close()
+            cleanup_factories()
 
 
 @pytest.fixture
-def setup_factories(db_session: Session) -> None:
-    RoleFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
-    UserFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
-
-
-@pytest.fixture
-def db_client(db_session: Session, setup_factories: None) -> Generator[TestClient]:  # noqa: ARG001
+def db_client(db_session: Session) -> Generator[TestClient]:
     def override_get_db() -> Generator[Session]:
         yield db_session
 
