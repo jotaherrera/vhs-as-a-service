@@ -1,3 +1,15 @@
+# Cache folders
 __pycache__
+.venv
+.ruff_cache
+.pytest_cache
+
+# Env files
 .env
+
+# From a template
 app/database/bootstrap/setup.sql
+
+# Coverage
+.coverage
+coverage.xml
