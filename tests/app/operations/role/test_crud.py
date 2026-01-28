@@ -1,8 +1,19 @@
 from sqlalchemy.orm import Session
 
-from app.operations.role.crud import create_role, get_role_by_id, get_role_by_name
+from app.operations.role.crud import create_role, get_all_roles, get_role_by_id, get_role_by_name
 from app.operations.role.schemas import RoleCreate
 from tests.factories.role import RoleFactory
+
+
+def test_get_all_roles(db_session: Session) -> None:
+    role_1 = RoleFactory.create(name="admin")
+    role_2 = RoleFactory.create(name="user")
+
+    all_roles = get_all_roles(db_session)
+
+    returned_ids = {r.id for r in all_roles}
+
+    assert returned_ids == {role_1.id, role_2.id}
 
 
 def test_get_role_by_name(db_session: Session) -> None:
