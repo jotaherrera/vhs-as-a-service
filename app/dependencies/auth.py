@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from app.core.security import decode_token, verify_password
 from app.database.session import DbSession
 from app.exceptions import NotFoundError, UnauthorizedError
-from app.models.user import User
+from app.models import User
 from app.operations.user import crud as crud_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
