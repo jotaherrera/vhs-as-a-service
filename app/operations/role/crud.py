@@ -4,6 +4,10 @@ from app.models import Role
 from app.operations.role.schemas import RoleCreate
 
 
+def get_all_roles(db: Session) -> list[Role]:
+    return db.query(Role).all()
+
+
 def get_role_by_name(db: Session, name: str) -> Role | None:
     return db.query(Role).filter(Role.name == name).first()
 
