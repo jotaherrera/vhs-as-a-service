@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter
 
-from app.api.v1.schemas.router import TokenRequest, TokenResponse
+from app.api.v1.schemas.token import TokenRequest, TokenResponse
 from app.core.security import create_access_token
 from app.database.session import DbSession
 from app.dependencies.auth import authenticate_user
