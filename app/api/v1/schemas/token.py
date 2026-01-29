@@ -1,10 +1,10 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class TokenRequest(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
 
