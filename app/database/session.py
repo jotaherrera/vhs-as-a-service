@@ -19,7 +19,7 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_db() -> Generator[Session]:
+def get_db() -> Generator[Session]:  # pragma: no cover
     db = SessionLocal()
     try:
         yield db

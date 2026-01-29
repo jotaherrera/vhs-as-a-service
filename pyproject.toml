@@ -40,3 +40,7 @@ known_first_party=["app"]
 
 [tool.deptry.per_rule_ignores]
 DEP002=["pre-commit", "psycopg2-binary"]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/database/alembic/env.py"]
