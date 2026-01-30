@@ -1,7 +1,7 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.api.v1.schemas.user import UserCreateRequest, UserResponse, UsersResponse
+from app.api.v1.schemas.user import UserResponse, UsersResponse
 from app.core.security import create_access_token
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
@@ -37,14 +37,13 @@ def test_list_users_normal_user(db_client: TestClient) -> None:
 def test_create_user(db_client: TestClient) -> None:
     role = RoleFactory.create(name="user")
 
-    request = UserCreateRequest(
-        email="johndoe@mail.com",
-        name="John",
-        last_name="Doe",
-        password="test-password",  # noqa: S106
-        role=role.name,
-    ).model_dump()
-
+    request = {
+        "email": "johndoe@mail.com",
+        "name": "John",
+        "last_name": "Doe",
+        "password": "test-password",
+        "role": role.name,
+    }
     response = db_client.post("/api/v1/users", json=request)
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -63,13 +62,13 @@ def test_create_user(db_client: TestClient) -> None:
 
 
 def test_create_user_role_not_found(db_client: TestClient) -> None:
-    request = UserCreateRequest(
-        email="johndoe@mail.com",
-        name="John",
-        last_name="Doe",
-        password="test-password",  # noqa: S106
-        role="not-a-role",
-    ).model_dump()
+    request = {
+        "email": "johndoe@mail.com",
+        "name": "John",
+        "last_name": "Doe",
+        "password": "test-password",
+        "role": "not-a-role",
+    }
     response = db_client.post("/api/v1/users", json=request)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND

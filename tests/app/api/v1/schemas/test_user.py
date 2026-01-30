@@ -9,7 +9,6 @@ def test_user_login_invalid_email() -> None:
         UserLogin(email="not-a-valid-email.com", password="test-password")  # noqa: S106
 
     errors = ex.value.errors()
-
     assert len(errors) == 1
     assert errors[0]["loc"] == ("email",)
     assert errors[0]["type"] == "value_error"
