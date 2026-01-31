@@ -61,6 +61,25 @@ def test_create_user(db_client: TestClient) -> None:
     assert user.role_id == role.id
 
 
+def test_create_user_email_already_exists(db_client: TestClient) -> None:
+    role = RoleFactory.create(name="user")
+
+    password = "test-password"  # noqa: S105
+    user = UserFactory.create(email="johdoe@mail.com")
+
+    request = {
+        "email": user.email,
+        "name": user.name,
+        "last_name": user.last_name,
+        "password": password,
+        "role": role.name,
+    }
+    response = db_client.post("/api/v1/users", json=request)
+
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.json()["detail"] == "A user with this email already exists"
+
+
 def test_create_user_role_not_found(db_client: TestClient) -> None:
     request = {
         "email": "johndoe@mail.com",
