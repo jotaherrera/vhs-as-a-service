@@ -6,7 +6,7 @@ from fastapi.params import Depends
 from app.api.v1.schemas.user import UserCreateRequest, UserResponse, UsersResponse
 from app.database.session import DbSession
 from app.dependencies.auth import get_current_active_user
-from app.exceptions import ForbiddenError, NotFoundError
+from app.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.models import User
 from app.operations.role import crud as crud_role
 from app.operations.user import crud as crud_user
@@ -31,6 +31,10 @@ async def list_users(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(db: DbSession, user_request: UserCreateRequest) -> UserResponse:
+    potential_user = crud_user.get_user_by_email(db, user_request.email)
+    if potential_user is not None:
+        raise ConflictError(detail="A user with this email already exists")
+
     db_role = crud_role.get_role_by_name(db, user_request.role)
     if db_role is None:
         raise NotFoundError(detail="Role not found")
