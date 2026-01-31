@@ -28,6 +28,6 @@ def test_settings_loads_db_env_vars() -> None:
 
     assert settings.database.name == "test_db"
     assert settings.database.user == "test_user"
-    assert settings.database.password == "test_password"  # noqa: S105
+    assert settings.database.password.get_secret_value() == "test_password"
     assert settings.database.host == "test_host"
     assert settings.database.port == 123  # noqa: PLR2004

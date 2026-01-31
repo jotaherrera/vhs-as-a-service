@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine.url import URL
 
@@ -9,13 +9,13 @@ class AppSettings(BaseModel):
     name: str = "pluto"
     debug: bool = False
     version: str = "0.1.0"
-    jwt_secret: str
+    jwt_secret: SecretStr
 
 
 class DatabaseSettings(BaseModel):
     name: str = "pluto"
     user: str
-    password: str
+    password: SecretStr
     host: str = "localhost"
     port: int = 5432
 
@@ -24,7 +24,7 @@ class DatabaseSettings(BaseModel):
         return URL.create(
             drivername="postgresql",
             username=self.user,
-            password=self.password,
+            password=self.password.get_secret_value(),
             host=self.host,
             port=self.port,
             database=self.name,

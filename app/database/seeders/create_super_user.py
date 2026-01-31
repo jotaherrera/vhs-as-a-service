@@ -1,6 +1,7 @@
 import logging
 import os
 
+from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
 from app.operations.role import crud as crud_role
@@ -37,7 +38,7 @@ def create_super_user(db: Session) -> None:
 
     user = UserCreate(
         email=email,
-        password=password,
+        password=SecretStr(password),
         name=name,
         last_name=last_name,
         role_id=admin_role.id,

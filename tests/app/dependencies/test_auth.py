@@ -1,4 +1,5 @@
 import pytest
+from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token
@@ -10,13 +11,17 @@ from tests.factories.user import UserFactory
 def test_authenticate_user(db_session: Session) -> None:
     password = "test-password"  # noqa: S105
     user = UserFactory.create(password=password)
-    authenticated_user = authenticate_user(db_session, user.email, password)
+    authenticated_user = authenticate_user(db_session, user.email, SecretStr(password))
 
     assert authenticated_user is not None
 
 
 def test_authenticate_user_non_existent_user(db_session: Session) -> None:
-    authenticated_user = authenticate_user(db_session, "wrong-email@mail.com", "wrong-password")
+    authenticated_user = authenticate_user(
+        db_session,
+        "wrong-email@mail.com",
+        SecretStr("wrong-password"),
+    )
 
     assert authenticated_user is None
 
@@ -25,7 +30,7 @@ def test_authenticate_user_wrong_password(db_session: Session) -> None:
     password = "test-password"  # noqa: S105
     user = UserFactory.create(password=password)
 
-    authenticated_user = authenticate_user(db_session, user.email, "wrong-password")
+    authenticated_user = authenticate_user(db_session, user.email, SecretStr("wrong-password"))
 
     assert authenticated_user is None
 
