@@ -1,3 +1,4 @@
+from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
@@ -42,7 +43,7 @@ def test_create_user(db_session: Session) -> None:
         email="johndoe@mail.com",
         name="John",
         last_name="Doe",
-        password="tests-password",  # noqa: S106
+        password=SecretStr("tests-password"),
         role_id=role.id,
     )
 

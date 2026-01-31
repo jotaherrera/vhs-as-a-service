@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+from app.fields import PasswordStr
 from app.operations.user.schemas import UserBase, UserCreateBase
 
 
@@ -26,4 +27,4 @@ class UsersResponse(BaseModel):
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str
+    password: PasswordStr

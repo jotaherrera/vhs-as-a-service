@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import SecretStr
 
 from app.core.security import decode_token, verify_password
 from app.database.session import DbSession
@@ -12,12 +13,12 @@ from app.operations.user import crud as crud_user
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def authenticate_user(db: DbSession, email: str, password: str) -> User | None:
+def authenticate_user(db: DbSession, email: str, password: SecretStr) -> User | None:
     db_user = crud_user.get_user_by_email(db, email)
     if db_user is None:
         return None
 
-    if not verify_password(password, db_user.password):
+    if not verify_password(password.get_secret_value(), db_user.password):
         return None
 
     return db_user

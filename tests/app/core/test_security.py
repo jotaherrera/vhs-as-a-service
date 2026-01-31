@@ -30,7 +30,7 @@ def test_create_access_token() -> None:
 
     decoded_token = jwt.decode(
         token.strip(),
-        key=get_settings().app.jwt_secret,
+        key=get_settings().app.jwt_secret.get_secret_value(),
         algorithms=ALGORITHM,
     )
 
@@ -50,7 +50,11 @@ def test_decode_token() -> None:
         "sub": user_id,
         "exp": expires,
     }
-    token = jwt.encode(payload=to_encode, key=get_settings().app.jwt_secret, algorithm=ALGORITHM)
+    token = jwt.encode(
+        payload=to_encode,
+        key=get_settings().app.jwt_secret.get_secret_value(),
+        algorithm=ALGORITHM,
+    )
 
     decoded_token = decode_token(token)
 

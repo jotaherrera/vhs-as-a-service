@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
 
+from app.fields import PasswordStr
+
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -8,7 +10,7 @@ class UserBase(BaseModel):
 
 
 class UserCreateBase(UserBase):
-    password: str
+    password: PasswordStr
 
 
 class UserCreate(UserCreateBase):
@@ -18,7 +20,7 @@ class UserCreate(UserCreateBase):
 
 class UserUpdate(BaseModel):
     email: EmailStr | None = None
-    password: str | None = None
+    password: PasswordStr | None = None
     name: str | None = None
     last_name: str | None = None
     role_id: int | None = None

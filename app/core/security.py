@@ -21,12 +21,20 @@ def create_access_token(
     expires = datetime.now(UTC) + expires_delta
     to_encode.update({"exp": expires})
 
-    return jwt.encode(payload=to_encode, key=get_settings().app.jwt_secret, algorithm=ALGORITHM)
+    return jwt.encode(
+        payload=to_encode,
+        key=get_settings().app.jwt_secret.get_secret_value(),
+        algorithm=ALGORITHM,
+    )
 
 
 def decode_token(token: str) -> dict[str, Any]:
     try:
-        return jwt.decode(token.strip(), key=get_settings().app.jwt_secret, algorithms=ALGORITHM)
+        return jwt.decode(
+            token.strip(),
+            key=get_settings().app.jwt_secret.get_secret_value(),
+            algorithms=ALGORITHM,
+        )
     except jwt.InvalidTokenError as err:
         raise UnauthorizedError(detail="Could not validate credentials") from err
 
