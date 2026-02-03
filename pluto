@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+
+# shellcheck source=.env
+ENV_FILE=".env"
+
+function log() {
+  echo "🪐 [PLUTO] $1"
+}
+
+function volume_exists() {
+  docker volume inspect "pluto_postgres_data" > /dev/null 2>&1
+}
+
+function set_env() {
+  log "Loading environment variables"
+  set -e
+  source "$ENV_FILE"
+  set +a
+}
+
+function generate_sql_file() {
+  log "Generating SQL setup file from template"
+  envsubst < app/database/bootstrap/setup.sql.template > app/database/bootstrap/setup.sql
+}
+
+function star_container() {
+  log "Starting DB container"
+  docker compose up -d
+}
+
+function run_migrations() {
+  log "Running DB migrations"
+  uv run alembic upgrade head > /dev/null 2>&1
+}
+
+function wait_for_db() {
+  local container_id
+
+  log "Waiting for Postgres to become healthy..."
+
+  container_id=$(docker compose ps -q postgres)
+
+  until [ "$(docker inspect --format='{{.State.Health.Status}}' "${container_id}")" = "healthy" ]; do
+    sleep 2
+  done
+
+  log "Postgres is healthy"
+
+}
+
+function run_seeders() {
+  uv run python -m app.database.seeders.bootstrap > /dev/null
+}
+
+function stop_container() {
+  log "Stopping DB container"
+  docker compose down -v
+}
+
+function start_api() {
+  if [ "$1" == "--dev" ]; then
+    log "Starting API in DEV mode"
+    uv run fastapi dev app/main.py
+  else
+    log "Starting API"
+    uv run fastapi run app/main.py
+  fi
+}
+
+function up() {
+  local dev_flag="${1:-}"
+
+  set_env
+
+  if volume_exists; then
+    log "Existing DB volumen detected, skipping bootstrap process"
+    star_container
+    wait_for_db
+  else
+    log "Fresh DB volume, running bootstrap process"
+    generate_sql_file
+    star_container
+    wait_for_db
+    run_migrations
+    run_seeders
+  fi
+
+  start_api "$dev_flag"
+}
+
+function down() {
+  stop_container
+}
+
+function reset() {
+  down
+  up "$@"
+}
+
+function main() {
+  cmd="${1:-}"
+  shift || true
+
+  case "$cmd" in
+    up)
+      up "$@"
+      ;;
+    down)
+      down
+      ;;
+    reset)
+      reset "$@"
+      ;;
+    *)
+      echo "Usage: ./pluto {up|down|reset} [--dev]"
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
