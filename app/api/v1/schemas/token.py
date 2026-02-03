@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, SecretStr
+from pydantic import BaseModel, EmailStr
 
 from app.fields import PasswordStr
 
@@ -11,5 +11,5 @@ class TokenRequest(BaseModel):
 
 
 class TokenResponse(BaseModel):
-    token: SecretStr
+    token: str
     type: Literal["Bearer"]

@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from fastapi import APIRouter
-from pydantic import SecretStr
 
 from app.api.v1.schemas.token import TokenRequest, TokenResponse
 from app.core.security import create_access_token
@@ -25,4 +24,4 @@ async def get_access_token(db: DbSession, login_request: TokenRequest) -> TokenR
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
-    return TokenResponse(token=SecretStr(access_token), type="Bearer")
+    return TokenResponse(token=access_token, type="Bearer")
