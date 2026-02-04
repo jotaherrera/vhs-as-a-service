@@ -1,5 +1,4 @@
 import logging
-import os
 
 from pydantic import SecretStr
 from sqlalchemy.orm import Session
@@ -10,25 +9,18 @@ from app.operations.user.schemas import UserCreate
 
 LOGGER = logging.getLogger(__name__)
 
-
-def safe_get_env(env_var: str) -> str:
-    value = os.getenv(env_var)
-    if not value:
-        msg = f"Environment variable {env_var} is not set"
-        raise ValueError(msg)
-
-    return value
+# Hardcoded values for easier demonstration purposes
+# This should be avoided in production
+SUPER_USER_EMAIL = "admin@email.com"
+SUPER_USER_PASSWORD = "012345678"  # noqa: S105
+SUPER_USER_NAME = "Admin"
+SUPER_USER_LAST_NAME = "User"
 
 
 def create_super_user(db: Session) -> None:
-    password = safe_get_env("SUPER_USER_PASSWORD")
-    email = safe_get_env("SUPER_USER_EMAIL")
-    name = safe_get_env("SUPER_USER_NAME")
-    last_name = safe_get_env("SUPER_USER_LAST_NAME")
-
-    existing_user = crud_user.get_user_by_email(db, email)
+    existing_user = crud_user.get_user_by_email(db, SUPER_USER_EMAIL)
     if existing_user:
-        msg = f"User {email} already exists"
+        msg = f"User {SUPER_USER_EMAIL} already exists"
         raise ValueError(msg)
 
     admin_role = crud_role.get_role_by_name(db, "admin")
@@ -37,15 +29,15 @@ def create_super_user(db: Session) -> None:
         raise ValueError(msg)
 
     user = UserCreate(
-        email=email,
-        password=SecretStr(password),
-        name=name,
-        last_name=last_name,
+        email=SUPER_USER_EMAIL,
+        password=SecretStr(SUPER_USER_PASSWORD),
+        name=SUPER_USER_NAME,
+        last_name=SUPER_USER_LAST_NAME,
         role_id=admin_role.id,
         is_active=True,
     )
 
     crud_user.create_user(db, user)
 
-    msg = f"Super user {email} created successfully."
+    msg = f"Super user {SUPER_USER_EMAIL} created successfully."
     LOGGER.info(msg)
