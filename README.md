@@ -1,8 +1,17 @@
-# 🪐 PLUTO
+# PLUTO
 
 [![codecov](https://codecov.io/gh/jotaherrera/pluto/graph/badge.svg?token=SVQQKD8WRP)](https://codecov.io/gh/jotaherrera/pluto)
 
-Managing personal finances through a REST API.
+Managing personal finances through a REST API. Backend built with FastAPI and PostgreSQL: JWT auth, RBAC, Alembic migrations, and separate DB roles (owner vs runtime), orchestrated with Docker.
+
+## Features
+
+- REST API with FastAPI
+- JWT authentication and authorization
+- Role-based access control
+- Schema migrations with Alembic
+- Separate Postgres roles (owner for DDL, app_user for DML)
+- Docker Compose for local Postgres
 
 ## Prerequisites
 
@@ -15,18 +24,14 @@ Managing personal finances through a REST API.
 
 Create a `.env` file in the project root. Required (and optional) variables:
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE__PASSWORD` | Postgres superuser password (used by Docker Compose) |
-| `DATABASE__PORT` | Port exposed for Postgres (e.g. `5432`) |
-| `DATABASE__APP_OWNER_PASSWORD` | Password for DB role `app_owner` (migrations) |
-| `DATABASE__APP_USER_PASSWORD` | Password for DB role `app_user` (API runtime) |
-| `DATABASE__USER` | User the API uses to connect (e.g. `app_user`) |
-| `APP__JWT_SECRET` | Secret for signing JWT tokens |
-| `SUPER_USER_EMAIL` | (Optional) Superuser email for seeders |
-| `SUPER_USER_PASSWORD` | (Optional) Superuser password for seeders |
-| `SUPER_USER_NAME` | (Optional) Superuser first name |
-| `SUPER_USER_LAST_NAME` | (Optional) Superuser last name |
+| Variable                       | Description                                          |
+| ------------------------------ | ---------------------------------------------------- |
+| `DATABASE__PASSWORD`           | Postgres superuser password (used by Docker Compose) |
+| `DATABASE__PORT`               | Port exposed for Postgres (e.g. `5432`)              |
+| `DATABASE__APP_OWNER_PASSWORD` | Password for DB role `app_owner` (migrations)        |
+| `DATABASE__APP_USER_PASSWORD`  | Password for DB role `app_user` (API runtime)        |
+| `DATABASE__USER`               | User the API uses to connect (e.g. `app_user`)       |
+| `APP__JWT_SECRET`              | Secret for signing JWT tokens                        |
 
 ## Running the app
 
