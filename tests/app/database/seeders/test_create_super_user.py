@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
 from app.database.seeders.create_super_user import (
-    SUPER_USER_EMAIL,
-    SUPER_USER_LAST_NAME,
-    SUPER_USER_NAME,
-    SUPER_USER_PASSWORD,
+    DEFAULT_SUPER_USER_EMAIL,
+    DEFAULT_SUPER_USER_LAST_NAME,
+    DEFAULT_SUPER_USER_NAME,
+    DEFAULT_SUPER_USER_PASSWORD,
     create_super_user,
 )
 from app.models import User
@@ -20,18 +20,18 @@ def test_create_super_user(db_session: Session) -> None:
 
     create_super_user(db_session)
 
-    user = db_session.query(User).filter(User.email == SUPER_USER_EMAIL).one()
+    user = db_session.query(User).filter(User.email == DEFAULT_SUPER_USER_EMAIL).one()
 
     assert user.role_id == role_id
-    assert user.name == SUPER_USER_NAME
-    assert user.last_name == SUPER_USER_LAST_NAME
+    assert user.name == DEFAULT_SUPER_USER_NAME
+    assert user.last_name == DEFAULT_SUPER_USER_LAST_NAME
     assert user.is_active is True
-    assert user.password != SUPER_USER_PASSWORD
-    assert verify_password(SUPER_USER_PASSWORD, user.password)
+    assert user.password != DEFAULT_SUPER_USER_PASSWORD
+    assert verify_password(DEFAULT_SUPER_USER_PASSWORD, user.password)
 
 
 def test_create_super_user_existing_user_error(db_session: Session) -> None:
-    user = UserFactory.create(email=SUPER_USER_EMAIL)
+    user = UserFactory.create(email=DEFAULT_SUPER_USER_EMAIL)
 
     with pytest.raises(ValueError, match=f"User {user.email} already exists"):
         create_super_user(db_session)

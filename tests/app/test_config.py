@@ -31,3 +31,30 @@ def test_settings_loads_db_env_vars() -> None:
     assert settings.database.password.get_secret_value() == "test_password"
     assert settings.database.host == "test_host"
     assert settings.database.port == 123  # noqa: PLR2004
+
+
+def test_database_migration_url_uses_migration_credentials_when_set() -> None:
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setenv("APP__JWT_SECRET", "secret")
+        mp.setenv("DATABASE__USER", "app_user")
+        mp.setenv("DATABASE__PASSWORD", "user_pass")
+        mp.setenv("DATABASE__MIGRATION_USER", "app_owner")
+        mp.setenv("DATABASE__MIGRATION_PASSWORD", "owner_pass")
+
+        settings = Settings()  # ty:ignore[missing-argument]
+
+    assert settings.database.url.username == "app_user"
+    assert settings.database.migration_url.username == "app_owner"
+    assert settings.database.migration_url.password == "owner_pass"  # noqa: S105
+
+
+def test_database_migration_url_falls_back_to_runtime_when_migration_unset() -> None:
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setenv("APP__JWT_SECRET", "secret")
+        mp.setenv("DATABASE__USER", "app_user")
+        mp.setenv("DATABASE__PASSWORD", "user_pass")
+
+        settings = Settings()  # ty:ignore[missing-argument]
+
+    assert settings.database.migration_url.username == "app_user"
+    assert settings.database.migration_url == settings.database.url

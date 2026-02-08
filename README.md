@@ -2,68 +2,73 @@
 
 [![codecov](https://codecov.io/gh/jotaherrera/pluto/graph/badge.svg?token=SVQQKD8WRP)](https://codecov.io/gh/jotaherrera/pluto)
 
-Managing personal finances through a REST API.
+A REST API for managing personal finances, built with FastAPI and secure database architecture.
 
 ## Features
 
 - REST API with FastAPI
 - JWT authentication and authorization
 - Role-based access control
-- Schema migrations with Alembic
-- Separate Postgres roles (owner for DDL, app_user for DML)
-- Docker Compose for local Postgres
+- Database migrations with Alembic
+- Separate Postgres roles for DDL and DML operations
+- Docker Compose for local development
 
 ## Prerequisites
 
 - **Python 3.13**
 - **[uv](https://docs.astral.sh/uv/)** – Python package and project manager
-- **Docker** and **Docker Compose** – for running Postgres
-- **envsubst** – for generating bootstrap SQL (often from the `gettext` package; on macOS: `brew install gettext` and ensure it’s on your `PATH`)
+- **Docker** and **Docker Compose**
+- **envsubst** – for SQL templating (macOS: `brew install gettext`)
 
-## Environment variables
+## Quick Start
 
-Create a `.env` file in the project root. Required (and optional) variables:
-
-| Variable                       | Description                                          |
-| ------------------------------ | ---------------------------------------------------- |
-| `DATABASE__PASSWORD`           | Postgres superuser password (used by Docker Compose) |
-| `DATABASE__PORT`               | Port exposed for Postgres (e.g. `5432`)              |
-| `DATABASE__APP_OWNER_PASSWORD` | Password for DB role `app_owner` (migrations)        |
-| `DATABASE__APP_USER_PASSWORD`  | Password for DB role `app_user` (API runtime)        |
-| `DATABASE__USER`               | User the API uses to connect (e.g. `app_user`)       |
-| `APP__JWT_SECRET`              | Secret for signing JWT tokens                        |
-
-## Running the app
-
-Use the project script to bring up the database (bootstrap and migrations run on first start) and start the API:
-
+1. Create a `.env` file (see Environment Variables below)
+2. Start the application:
 ```bash
 ./pluto up
 ```
 
-Development mode (with reload):
-
+Development mode with hot reload:
 ```bash
 ./pluto up --dev
 ```
 
-Other commands:
+API documentation: **http://localhost:8000/docs**
 
-- `./pluto down` – stop and remove the DB container
-- `./pluto reset [--dev]` – down then up (fresh start)
+## Environment Variables
 
-API docs (Swagger UI): **[/docs](http://localhost:8000/docs)** once the server is running.
+Create a `.env` file in the project root:
 
-## Users and roles
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE__PASSWORD` | Postgres superuser password | Yes |
+| `DATABASE__PORT` | Postgres port (e.g. `5432`) | Yes |
+| `DATABASE__APP_OWNER_PASSWORD` | Password for `app_owner` role | Yes |
+| `DATABASE__APP_USER_PASSWORD` | Password for `app_user` role | Yes |
+| `DATABASE__USER` | Runtime database user | Yes |
+| `DATABASE__MIGRATION_USER` | User for migrations (e.g. `app_owner`) | No |
+| `DATABASE__MIGRATION_PASSWORD` | Password for migration user | No |
+| `APP__JWT_SECRET` | Secret key for JWT tokens | Yes |
+| `SUPER_USER_EMAIL` | Admin email (default: `admin@email.com`) | No |
+| `SUPER_USER_PASSWORD` | Admin password (default: `012345678`) | No |
+| `SUPER_USER_NAME` | Admin first name (default: `Admin`) | No |
+| `SUPER_USER_LAST_NAME` | Admin last name (default: `User`) | No |
 
-- **Application roles**: `admin` and `user`.
-- **Admin** (the superuser from the seeders): for managing users and seeing all of them. You define it via env: `SUPER_USER_EMAIL`, `SUPER_USER_PASSWORD`, `SUPER_USER_NAME`, `SUPER_USER_LAST_NAME`.
-- **User**: for normal use; each user only sees and works with their own data.
+## Available Commands
 
-## Database users (Postgres)
+- `./pluto up` – Start database and API
+- `./pluto up --dev` – Start with hot reload
+- `./pluto down` – Stop and remove containers
+- `./pluto reset [--dev]` – Clean restart
 
-These are DB roles, not app roles:
+## Architecture
 
-- **postgres** – Used by Docker Compose; superuser of the cluster.
-- **app_owner** – Used for migrations (DDL: create tables, etc.). Set `DATABASE__USER=app_owner` when running `alembic upgrade head`.
-- **app_user** – Used by the API at runtime (DML only). The app connects with this user in production so it cannot alter schema.
+### Application Roles
+
+- **Admin**: Full access including user management
+- **User**: Access limited to own data
+
+### Database Users
+
+- **app_owner** – Used for schema migrations (DDL)
+- **app_user** – Used by API at runtime (DML)
