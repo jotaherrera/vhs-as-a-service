@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/jotaherrera/vhs-as-a-service/graph/badge.svg?token=SVQQKD8WRP)](https://codecov.io/gh/jotaherrera/vhs-as-a-service)
 
-A REST API for managing personal finances, built with FastAPI and secure database architecture.
+A 90s video rental store REST API. Built with FastAPI + PostgreSQL.
 
 ## Features
 
@@ -10,7 +10,6 @@ A REST API for managing personal finances, built with FastAPI and secure databas
 - JWT authentication and authorization
 - Role-based access control
 - Database migrations with Alembic
-- Separate Postgres roles for DDL and DML operations
 - Docker Compose for local development
 
 ## Prerequisites
@@ -18,7 +17,6 @@ A REST API for managing personal finances, built with FastAPI and secure databas
 - **Python 3.13**
 - **[uv](https://docs.astral.sh/uv/)** – Python package and project manager
 - **Docker** and **Docker Compose**
-- **envsubst** – for SQL templating (macOS: `brew install gettext`)
 
 ## Quick Start
 
@@ -41,18 +39,10 @@ Create a `.env` file in the project root:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `DATABASE__PASSWORD` | Postgres superuser password | Yes |
+| `DATABASE__PASSWORD` | Postgres password | Yes |
 | `DATABASE__PORT` | Postgres port (e.g. `5432`) | Yes |
-| `DATABASE__APP_OWNER_PASSWORD` | Password for `app_owner` role | Yes |
-| `DATABASE__APP_USER_PASSWORD` | Password for `app_user` role | Yes |
-| `DATABASE__USER` | Runtime database user | Yes |
-| `DATABASE__MIGRATION_USER` | User for migrations (e.g. `app_owner`) | No |
-| `DATABASE__MIGRATION_PASSWORD` | Password for migration user | No |
+| `DATABASE__USER` | Database user | Yes |
 | `APP__JWT_SECRET` | Secret key for JWT tokens | Yes |
-| `SUPER_USER_EMAIL` | Admin email (default: `admin@email.com`) | No |
-| `SUPER_USER_PASSWORD` | Admin password (default: `012345678`) | No |
-| `SUPER_USER_NAME` | Admin first name (default: `Admin`) | No |
-| `SUPER_USER_LAST_NAME` | Admin last name (default: `User`) | No |
 
 ## Available Commands
 
@@ -73,8 +63,3 @@ Create a `.env` file in the project root:
 
 - **Admin**: Full access including user management
 - **User**: Access limited to own data
-
-### Database Users
-
-- **app_owner** – Used for schema migrations (DDL)
-- **app_user** – Used by API at runtime (DML)
