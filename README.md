@@ -1,6 +1,6 @@
-# PLUTO
+# vhs-as-a-service
 
-[![codecov](https://codecov.io/gh/jotaherrera/pluto/graph/badge.svg?token=SVQQKD8WRP)](https://codecov.io/gh/jotaherrera/pluto)
+[![codecov](https://codecov.io/gh/jotaherrera/vhs-as-a-service/graph/badge.svg?token=SVQQKD8WRP)](https://codecov.io/gh/jotaherrera/vhs-as-a-service)
 
 A REST API for managing personal finances, built with FastAPI and secure database architecture.
 
@@ -25,12 +25,12 @@ A REST API for managing personal finances, built with FastAPI and secure databas
 1. Create a `.env` file (see Environment Variables below)
 2. Start the application:
 ```bash
-./pluto up
+./vhsaas up
 ```
 
 Development mode with hot reload:
 ```bash
-./pluto up --dev
+./vhsaas up --dev
 ```
 
 API documentation: **http://localhost:8000/docs**
@@ -56,10 +56,16 @@ Create a `.env` file in the project root:
 
 ## Available Commands
 
-- `./pluto up` – Start database and API
-- `./pluto up --dev` – Start with hot reload
-- `./pluto down` – Stop and remove containers
-- `./pluto reset [--dev]` – Clean restart
+### App
+- `./vhsaas up` – Start database and API
+- `./vhsaas up --dev` – Start with hot reload
+- `./vhsaas down` – Stop and remove containers
+- `./vhsaas reset [--dev]` – Clean restart
+
+### Dev
+- `uv run pytest` – Run tests
+- `uv run ruff format --check && uv run ruff check` – Lint
+- `uv run ty check .` – Type check
 
 ## Architecture
 

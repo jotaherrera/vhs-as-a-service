@@ -9,14 +9,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 class AppSettings(BaseModel):
-    name: str = "pluto"
+    name: str = "vhsaas"
     debug: bool = False
     version: str = "0.1.0"
     jwt_secret: SecretStr
 
 
 class DatabaseSettings(BaseModel):
-    name: str = "pluto"
+    name: str = "vhsaas"
     user: str
     password: SecretStr
     host: str = "localhost"

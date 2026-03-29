@@ -1,4 +1,4 @@
-name: pluto
+name: vhsaas
 
 services:
   postgres:
@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
 
     environment:
-      POSTGRES_DB: pluto
+      POSTGRES_DB: vhsaas
       POSTGRES_PASSWORD: ${DATABASE__PASSWORD}
 
     ports:

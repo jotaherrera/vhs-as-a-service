@@ -4,11 +4,11 @@
 ENV_FILE=".env"
 
 function log() {
-  echo "🪐 [PLUTO] $1"
+  echo "📼 [VHSaaS] $1"
 }
 
 function volume_exists() {
-  docker volume inspect "pluto_postgres_data" > /dev/null 2>&1
+  docker volume inspect "vhsaas_postgres_data" > /dev/null 2>&1
 }
 
 function set_env() {
@@ -112,7 +112,7 @@ function main() {
       reset "$@"
       ;;
     *)
-      echo "Usage: ./pluto {up|down|reset} [--dev]"
+      echo "Usage: ./vhsaas {up|down|reset} [--dev]"
       exit 1
       ;;
   esac
