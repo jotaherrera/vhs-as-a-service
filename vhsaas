@@ -1,26 +1,11 @@
 #!/usr/bin/env bash
 
-# shellcheck source=.env
-ENV_FILE=".env"
-
 function log() {
   echo "📼 [VHSaaS] $1"
 }
 
 function volume_exists() {
   docker volume inspect "vhsaas_postgres_data" > /dev/null 2>&1
-}
-
-function set_env() {
-  log "Loading environment variables"
-  set -e
-  source "$ENV_FILE"
-  set +a
-}
-
-function generate_sql_file() {
-  log "Generating SQL setup file from template"
-  envsubst < app/database/bootstrap/setup.sql.template > app/database/bootstrap/setup.sql
 }
 
 function star_container() {
@@ -70,15 +55,12 @@ function start_api() {
 function up() {
   local dev_flag="${1:-}"
 
-  set_env
-
   if volume_exists; then
-    log "Existing DB volumen detected, skipping bootstrap process"
+    log "Existing DB volume detected, skipping bootstrap process"
     star_container
     wait_for_db
   else
     log "Fresh DB volume, running bootstrap process"
-    generate_sql_file
     star_container
     wait_for_db
     run_migrations

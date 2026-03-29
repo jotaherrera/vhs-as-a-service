@@ -7,9 +7,6 @@ __pycache__
 # Env files
 .env
 
-# From a template
-app/database/bootstrap/setup.sql
-
 # Coverage
 .coverage
 coverage.xml
