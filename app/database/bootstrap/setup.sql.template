@@ -14,7 +14,7 @@ GRANT ALL PRIVILEGES ON SCHEMA app TO app_owner;
 -- app_user: Runtime/DML user
 -- -----------------------------------------------------------------------------
 CREATE USER app_user WITH PASSWORD '${DATABASE__APP_USER_PASSWORD}';
-GRANT CONNECT ON DATABASE pluto TO app_user;
+GRANT CONNECT ON DATABASE vhsaas TO app_user;
 GRANT USAGE ON SCHEMA app TO app_user;
 
 -- Current objects

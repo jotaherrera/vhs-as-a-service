@@ -1,5 +1,5 @@
 [project]
-name = "pluto"
+name = "vhsaas"
 version = "0.1.0"
 description = "Managing personal finance through a REST API"
 readme = "README.md"
@@ -35,11 +35,11 @@ dev = [
 ]
 
 [tool.deptry]
-extend_exclude=["^.tests/"]
-known_first_party=["app"]
+extend_exclude = ["^.tests/"]
+known_first_party = ["app"]
 
 [tool.deptry.per_rule_ignores]
-DEP002=["pre-commit", "psycopg2-binary"]
+DEP002 = ["pre-commit", "psycopg2-binary"]
 
 [tool.coverage.run]
 source = ["app"]
