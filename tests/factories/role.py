@@ -1,6 +1,7 @@
 from factory.alchemy import SQLAlchemyModelFactory
 
 from app.models import Role
+from app.models.role import Roles
 
 
 class RoleFactory(SQLAlchemyModelFactory):
@@ -9,5 +10,5 @@ class RoleFactory(SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = "flush"
         sqlalchemy_get_or_create = ("name",)
 
-    name = "user"
+    name = Roles.CUSTOMER
     is_active = True

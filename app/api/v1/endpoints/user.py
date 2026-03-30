@@ -8,6 +8,7 @@ from app.database.session import DbSession
 from app.dependencies.auth import get_current_active_user
 from app.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.models import User
+from app.models.role import Roles
 from app.operations.role import crud as crud_role
 from app.operations.user import crud as crud_user
 from app.operations.user.schemas import UserCreate
@@ -20,7 +21,7 @@ async def list_users(
     db: DbSession,
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UsersResponse:
-    if current_user.role.name != "admin":
+    if current_user.role.name != Roles.STAFF:
         raise ForbiddenError(detail="Not authorized to perform this action")
 
     users = crud_user.get_all_users(db)
@@ -57,7 +58,7 @@ async def get_user(
     current_user: Annotated[User, Depends(get_current_active_user)],
     user_id: int,
 ) -> UserResponse:
-    if current_user.id != user_id and current_user.role.name != "admin":
+    if current_user.id != user_id and current_user.role.name != Roles.STAFF:
         raise ForbiddenError(detail="Not authorized to perform this action")
 
     user = crud_user.get_user_by_id(db, int(user_id))

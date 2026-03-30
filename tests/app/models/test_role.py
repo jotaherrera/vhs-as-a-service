@@ -1,3 +1,5 @@
+import pytest
+
 from tests.factories.role import RoleFactory
 
 
@@ -10,3 +12,8 @@ def test_role_string_repr() -> None:
     )
 
     assert repr(role) == expected
+
+
+def test_create_role_with_invalid_name() -> None:
+    with pytest.raises(ValueError, match="Invalid role:"):
+        RoleFactory.build(name="INVALID")

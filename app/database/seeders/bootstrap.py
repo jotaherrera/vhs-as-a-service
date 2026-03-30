@@ -5,21 +5,20 @@ from sqlalchemy.orm import Session
 from app.core.security import hash_password
 from app.database.session import SessionLocal
 from app.models import Role, User
+from app.models.role import Roles
 
 LOGGER = logging.getLogger(__name__)
 
-SEED_ROLES = ["admin", "user"]
-
-ADMIN_USER = {
-    "email": "admin@vhsaas.com",
-    "password": "admin1234",
-    "name": "Admin",
+STAFF_USER = {
+    "email": "staff@vhsaas.com",
+    "password": "staff1234",
+    "name": "Staff",
     "last_name": "User",
 }
 
 
 def seed_roles(db: Session) -> None:
-    for name in SEED_ROLES:
+    for name in Roles:
         if not db.query(Role).filter(Role.name == name).first():
             db.add(Role(name=name, is_active=True))
 
@@ -27,33 +26,33 @@ def seed_roles(db: Session) -> None:
     LOGGER.info("Roles seeded.")
 
 
-def seed_admin(db: Session) -> None:
-    if db.query(User).filter(User.email == ADMIN_USER["email"]).first():
-        LOGGER.info("Admin user already exists, skipping.")
+def seed_staff(db: Session) -> None:
+    if db.query(User).filter(User.email == STAFF_USER["email"]).first():
+        LOGGER.info("Staff user already exists, skipping.")
         return
 
-    admin_role = db.query(Role).filter(Role.name == "admin").one()
+    staff_role = db.query(Role).filter(Role.name == Roles.STAFF).one()
 
     db.add(
         User(
-            email=ADMIN_USER["email"],
-            password=hash_password(ADMIN_USER["password"]),
-            name=ADMIN_USER["name"],
-            last_name=ADMIN_USER["last_name"],
-            role_id=admin_role.id,
+            email=STAFF_USER["email"],
+            password=hash_password(STAFF_USER["password"]),
+            name=STAFF_USER["name"],
+            last_name=STAFF_USER["last_name"],
+            role_id=staff_role.id,
             is_active=True,
         ),
     )
 
     db.commit()
-    LOGGER.info("Admin user seeded.")
+    LOGGER.info("Staff user seeded.")
 
 
 def main() -> None:
     db = SessionLocal()
     try:
         seed_roles(db)
-        seed_admin(db)
+        seed_staff(db)
     finally:
         db.close()
 

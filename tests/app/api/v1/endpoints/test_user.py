@@ -3,12 +3,13 @@ from fastapi.testclient import TestClient
 
 from app.api.v1.schemas.user import UserResponse, UsersResponse
 from app.core.security import create_access_token
+from app.models.role import Roles
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 
 
 def test_list_users_admin(db_client: TestClient) -> None:
-    role = RoleFactory.create(name="admin")
+    role = RoleFactory.create(name=Roles.STAFF)
     admin_user = UserFactory.create(role=role)
     normal_user = UserFactory.create()
 
@@ -35,7 +36,7 @@ def test_list_users_normal_user(db_client: TestClient) -> None:
 
 
 def test_create_user(db_client: TestClient) -> None:
-    role = RoleFactory.create(name="user")
+    role = RoleFactory.create(name=Roles.CUSTOMER)
 
     request = {
         "email": "johndoe@mail.com",
@@ -62,7 +63,7 @@ def test_create_user(db_client: TestClient) -> None:
 
 
 def test_create_user_email_already_exists(db_client: TestClient) -> None:
-    role = RoleFactory.create(name="user")
+    role = RoleFactory.create(name=Roles.CUSTOMER)
 
     password = "test-password"  # noqa: S105
     user = UserFactory.create(email="johdoe@mail.com")
@@ -143,7 +144,7 @@ def test_get_user_by_id_normal_user(db_client: TestClient) -> None:
 
 
 def test_get_user_by_id_admin_user(db_client: TestClient) -> None:
-    role = RoleFactory.create(name="admin")
+    role = RoleFactory.create(name=Roles.STAFF)
 
     user_admin = UserFactory.create(role=role)
     user = UserFactory.create()
@@ -187,7 +188,7 @@ def test_get_user_by_id_normal_user_not_self_id(db_client: TestClient) -> None:
 
 
 def test_get_user_by_id_admin_user_not_found(db_client: TestClient) -> None:
-    role = RoleFactory.create(name="admin")
+    role = RoleFactory.create(name=Roles.STAFF)
 
     user_admin = UserFactory.create(role=role)
 
