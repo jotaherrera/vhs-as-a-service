@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import StrEnum
 from typing import ClassVar
 
@@ -20,12 +21,12 @@ class Role(Base):
 
     name: MappedColumn[str] = mapped_column(String(255), unique=True, nullable=False)
 
-    created_at: MappedColumn[DateTime] = mapped_column(
+    created_at: MappedColumn[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
-    modified_at: MappedColumn[DateTime] = mapped_column(
+    modified_at: MappedColumn[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
@@ -38,7 +39,7 @@ class Role(Base):
 
     def __repr__(self) -> str:
         return (
-            f"Role(id={self.id}, name={self.name}, is_active={self.is_active}, "
+            f"Role(id={self.id}, name={str(self.name)!r}, is_active={self.is_active}, "
             f"created_at={self.created_at}, modified_at={self.modified_at})"
         )
 
