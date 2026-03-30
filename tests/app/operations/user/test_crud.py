@@ -2,6 +2,7 @@ from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
+from app.models.role import Roles
 from app.operations.user.crud import create_user, get_all_users, get_user_by_email, get_user_by_id
 from app.operations.user.schemas import UserCreate
 from tests.factories.role import RoleFactory
@@ -38,7 +39,7 @@ def test_get_user_by_email(db_session: Session) -> None:
 
 
 def test_create_user(db_session: Session) -> None:
-    role = RoleFactory.create(name="user")
+    role = RoleFactory.create(name=Roles.CUSTOMER)
     user_create = UserCreate(
         email="johndoe@mail.com",
         name="John",

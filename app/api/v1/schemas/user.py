@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.fields import PasswordStr
+from app.models.role import Roles
 from app.operations.user.schemas import UserBase, UserCreateBase
 
 
@@ -17,7 +18,7 @@ class UserResponse(UserBase):
 
 
 class UserCreateRequest(UserCreateBase):
-    role: str = "user"
+    role: str = Roles.CUSTOMER
 
 
 class UsersResponse(BaseModel):
