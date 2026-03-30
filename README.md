@@ -4,6 +4,14 @@
 
 A 90s video rental store REST API. Built with FastAPI + PostgreSQL.
 
+> I've never held a VHS tape in my life — so obviously I built an API to rent them out.
+
+## Context
+
+Imagine a chain of physical video rental stores where staff use a **mobile app** (Apple Store-style) to manage rentals, inventory, and customers right from the shop floor. Customers also have access to a **web app** where they can browse the catalog, check their rental history, and **reserve movies** for in-store pickup.
+
+Both apps consume this same REST API.
+
 ## Features
 
 - REST API with FastAPI
@@ -61,5 +69,5 @@ Create a `.env` file in the project root:
 
 ### Application Roles
 
-- **Admin**: Full access including user management
-- **User**: Access limited to own data
+- **Admin** (store staff): Full access — manage rentals, inventory, and customers via the mobile app
+- **User** (customer): Browse catalog, view own rental history, and reserve movies via the web app
