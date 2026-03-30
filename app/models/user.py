@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import ClassVar
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func
@@ -19,25 +20,26 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    created_at: Mapped[DateTime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
-    modified_at: Mapped[DateTime] = mapped_column(
+    modified_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now,
         nullable=False,
     )
 
-    is_active: Mapped[Boolean] = mapped_column(Boolean, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     role = relationship("Role", back_populates="users")
 
     def __repr__(self) -> str:
         return (
-            f"User(id={self.id}, email={self.email}, name={self.name}, last_name={self.last_name}, "
+            f"User(id={self.id}, email={self.email!r}, "
+            f"name={self.name!r}, last_name={self.last_name!r}, "
             f"created_at={self.created_at}, modified_at={self.modified_at}, "
-            f"is_active={self.is_active}, role={self.role.name})"
+            f"is_active={self.is_active}, role={str(self.role.name)!r})"
         )
