@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import ClassVar
 
 from sqlalchemy import Date, DateTime, Integer, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
 
@@ -24,10 +24,12 @@ class Movie(Base):
     copies_available: Mapped[int] = mapped_column(Integer, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
+
+    rentals = relationship("Rental", back_populates="movie")
 
     def __repr__(self) -> str:
         return (
