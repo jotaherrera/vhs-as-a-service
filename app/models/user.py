@@ -28,13 +28,23 @@ class User(Base):
     modified_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now,
+        onupdate=func.now(),
         nullable=False,
     )
 
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     role = relationship("Role", back_populates="users")
+    customer_rentals = relationship(
+        "Rental",
+        foreign_keys="[Rental.customer_id]",
+        back_populates="customer",
+    )
+    staff_rentals = relationship(
+        "Rental",
+        foreign_keys="[Rental.staff_id]",
+        back_populates="staff",
+    )
 
     def __repr__(self) -> str:
         return (
