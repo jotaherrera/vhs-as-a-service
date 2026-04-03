@@ -6,11 +6,12 @@ services:
     restart: unless-stopped
 
     environment:
-      POSTGRES_DB: vhsaas
-      POSTGRES_PASSWORD: ${DATABASE__PASSWORD}
+      POSTGRES_USER: ${DATABASE__USER:?DATABASE__USER is required}
+      POSTGRES_DB: ${DATABASE__NAME:?DATABASE__NAME is required}
+      POSTGRES_PASSWORD: ${DATABASE__PASSWORD:?DATABASE__PASSWORD is required}
 
     ports:
-      - "${DATABASE__PORT}:5432"
+      - "${DATABASE__PORT:?DATABASE__PORT is required}:5432"
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
