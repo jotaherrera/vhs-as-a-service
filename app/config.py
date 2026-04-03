@@ -6,18 +6,18 @@ from sqlalchemy.engine.url import URL
 
 
 class AppSettings(BaseModel):
-    name: str = "vhsaas"
-    debug: bool = False
-    version: str = "0.1.0"
+    name: str
+    debug: bool
+    version: str
     jwt_secret: SecretStr
 
 
 class DatabaseSettings(BaseModel):
-    name: str = "vhsaas"
-    user: str = "postgres"
+    name: str
+    user: str
     password: SecretStr
-    host: str = "localhost"
-    port: int = 5432
+    host: str
+    port: int
 
     @property
     def url(self) -> URL:
@@ -34,7 +34,7 @@ class DatabaseSettings(BaseModel):
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
-        env_file=(".env", ".env.test"),
+        env_file=(".env.test", ".env"),
         extra="ignore",
     )
 
