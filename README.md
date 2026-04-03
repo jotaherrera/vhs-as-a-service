@@ -43,14 +43,16 @@ API documentation: **http://localhost:8000/docs**
 
 ## Environment Variables
 
-Create a `.env` file in the project root:
+All the following variables are required. Use `.env.test` as a reference.
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DATABASE__PASSWORD` | Postgres password | Yes |
-| `DATABASE__PORT` | Postgres port (e.g. `5432`) | Yes |
-| `DATABASE__USER` | Database user | Yes |
-| `APP__JWT_SECRET` | Secret key for JWT tokens | Yes |
+| Variable | Description |
+|----------|-------------|
+| `APP__DEBUG` | Enable debug mode |
+| `APP__JWT_SECRET` | Secret key for JWT tokens |
+| `DATABASE__USER` | Database user |
+| `DATABASE__PASSWORD` | Database password |
+| `DATABASE__HOST` | Database host |
+| `DATABASE__PORT` | Database port |
 
 ## Available Commands
 
