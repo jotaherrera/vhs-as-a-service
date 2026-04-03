@@ -7,7 +7,7 @@ services:
 
     environment:
       POSTGRES_USER: ${DATABASE__USER:?DATABASE__USER is required}
-      POSTGRES_DB: ${DATABASE__NAME:?DATABASE__NAME is required}
+      POSTGRES_DB: vhsaas
       POSTGRES_PASSWORD: ${DATABASE__PASSWORD:?DATABASE__PASSWORD is required}
 
     ports:

@@ -1,19 +1,19 @@
 from functools import lru_cache
 
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine.url import URL
 
 
 class AppSettings(BaseModel):
-    name: str
+    name: str = Field(default="vhsaas", init=False)
     debug: bool
-    version: str
+    version: str = Field(default="0.1.0", init=False)
     jwt_secret: SecretStr
 
 
 class DatabaseSettings(BaseModel):
-    name: str
+    name: str = Field(default="vhsaas", init=False)
     user: str
     password: SecretStr
     host: str
