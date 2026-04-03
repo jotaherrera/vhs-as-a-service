@@ -10,7 +10,7 @@ from app.exceptions import NotFoundError, UnauthorizedError
 from app.models import User
 from app.operations.user import crud as crud_user
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 
 def authenticate_user(db: DbSession, email: str, password: SecretStr) -> User | None:
