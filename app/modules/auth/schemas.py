@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 from app.core.fields import PasswordStr
 
 
-class TokenRequest(BaseModel):
+class TokenCreate(BaseModel):
     email: EmailStr
     password: PasswordStr
 
