@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, pool
 from sqlalchemy.engine.url import URL
 
 from app.core.config import get_settings
-from app.models import Base
+from app.database.infrastructure.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

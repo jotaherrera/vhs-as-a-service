@@ -4,9 +4,9 @@ from fastapi import APIRouter
 
 from app.core.exceptions import UnauthorizedError
 from app.core.security import create_access_token
-from app.database.session import DbSession
-from app.domains.auth.dependencies import authenticate_user
-from app.domains.auth.schemas import TokenRequest, TokenResponse
+from app.database.infrastructure.session import DbSession
+from app.modules.auth.dependencies import authenticate_user
+from app.modules.auth.schemas import TokenRequest, TokenResponse
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

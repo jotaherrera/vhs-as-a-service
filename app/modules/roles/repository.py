@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.domains.roles.schemas import RoleCreate
-from app.models import Role
+from app.modules.roles.model import Role
+from app.modules.roles.schemas import RoleCreate
 
 
 def get_all_roles(db: Session) -> list[Role]:

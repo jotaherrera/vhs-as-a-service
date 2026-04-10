@@ -1,7 +1,6 @@
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.models import Role
-from app.models.role import Roles
+from app.modules.roles.model import Role, Roles
 
 
 class RoleFactory(SQLAlchemyModelFactory):

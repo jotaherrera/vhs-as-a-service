@@ -1,7 +1,7 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.domains.auth.schemas import TokenResponse
+from app.modules.auth.schemas import TokenResponse
 from tests.factories.user import UserFactory
 
 

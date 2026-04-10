@@ -4,7 +4,7 @@ from typing import ClassVar
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models import Base
+from app.database.infrastructure.base import Base
 
 
 class User(Base):

@@ -3,9 +3,9 @@ import logging
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
-from app.database.session import SessionLocal
-from app.models import Role, User
-from app.models.role import Roles
+from app.database.infrastructure.session import SessionLocal
+from app.modules.roles.model import Role, Roles
+from app.modules.users.model import User
 
 LOGGER = logging.getLogger(__name__)
 

@@ -2,8 +2,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from app.core.security import create_access_token
-from app.domains.users.schemas import UserResponse, UsersResponse
-from app.models.role import Roles
+from app.modules.roles.model import Roles
+from app.modules.users.schemas import UserResponse, UsersResponse
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 

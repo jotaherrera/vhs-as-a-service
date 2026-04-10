@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.domains.roles import repository as role_repo
-from app.domains.roles.schemas import RoleCreate
-from app.models.role import Roles
+from app.modules.roles import repository as role_repo
+from app.modules.roles.model import Roles
+from app.modules.roles.schemas import RoleCreate
 from tests.factories.role import RoleFactory
 
 

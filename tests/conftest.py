@@ -9,7 +9,7 @@ from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 from testcontainers.postgres import PostgresContainer
 
-from app.database.session import get_db
+from app.database.infrastructure.session import get_db
 from app.main import app
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
