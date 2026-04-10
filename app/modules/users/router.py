@@ -5,7 +5,6 @@ from fastapi.params import Depends
 
 from app.database.infrastructure.session import DbSession
 from app.modules.auth.dependencies import get_current_active_user
-from app.modules.users import repository as user_repo
 from app.modules.users import service as user_service
 from app.modules.users.model import User
 from app.modules.users.schemas import UserCreate, UserList, UserResponse
@@ -26,7 +25,7 @@ async def list_users(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(db: DbSession, user_request: UserCreate) -> UserResponse:
     user = user_service.create_user(db, user_request)
-    return UserResponse.model_validate(user_repo.create(db, user))
+    return UserResponse.model_validate(user)
 
 
 @router.get("/me")
