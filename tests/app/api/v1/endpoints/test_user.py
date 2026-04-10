@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 
 from app.core.security import create_access_token
 from app.modules.roles.model import Roles
-from app.modules.users.schemas import UserResponse, UsersResponse
+from app.modules.users.schemas import UserList, UserResponse
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 
@@ -18,7 +18,7 @@ def test_list_users_admin(db_client: TestClient) -> None:
     response = db_client.get("/api/v1/users", headers={"Authorization": f"Bearer {token}"})
 
     assert response.status_code == status.HTTP_200_OK
-    user_response = UsersResponse.model_validate(response.json())
+    user_response = UserList.model_validate(response.json())
 
     returned_ids = {u.id for u in user_response.users}
     assert returned_ids == {admin_user.id, normal_user.id}
@@ -91,8 +91,8 @@ def test_create_user_role_not_found(db_client: TestClient) -> None:
     }
     response = db_client.post("/api/v1/users", json=request)
 
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["detail"] == "Role not found"
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    assert "Input should be" in response.json()["detail"][0]["msg"]
 
 
 def test_get_own_user(db_client: TestClient) -> None:

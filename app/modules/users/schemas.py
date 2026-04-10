@@ -6,49 +6,33 @@ from app.core.fields import PasswordStr
 from app.modules.roles.model import Roles
 
 
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     email: EmailStr
     name: str
     last_name: str
-
-
-class UserCreateBase(UserBase):
     password: PasswordStr
-
-
-class UserCreate(UserCreateBase):
-    role_id: int
-    is_active: bool = True
+    role: Roles
 
 
 class UserUpdate(BaseModel):
     email: EmailStr | None = None
-    password: PasswordStr | None = None
     name: str | None = None
     last_name: str | None = None
-    role_id: int | None = None
-    is_active: bool | None = None
+    password: PasswordStr | None = None
 
 
-class UserResponse(UserBase):
+class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
+    email: EmailStr
+    name: str
+    last_name: str
+    role_id: int
+    is_active: bool
     created_at: datetime
     modified_at: datetime
-    is_active: bool
-    role_id: int
-
-    model_config = ConfigDict(from_attributes=True)
 
 
-class UserCreateRequest(UserCreateBase):
-    role: str = Roles.CUSTOMER
-
-
-class UsersResponse(BaseModel):
+class UserList(BaseModel):
     users: list[UserResponse]
     total: int
-
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: PasswordStr

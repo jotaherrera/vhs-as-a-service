@@ -14,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 
 def authenticate_user(db: DbSession, email: str, password: SecretStr) -> User | None:
-    db_user = user_repo.get_user_by_email(db, email)
+    db_user = user_repo.get_by_email(db, email)
     if db_user is None:
         return None
 
@@ -32,7 +32,7 @@ def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_scheme)
     if user_id is None:
         raise credentials_exception
 
-    user = user_repo.get_user_by_id(db, user_id)
+    user = user_repo.get_by_id(db, user_id)
     if user is None:
         raise credentials_exception
 
