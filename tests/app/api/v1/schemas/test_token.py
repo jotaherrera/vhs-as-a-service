@@ -1,7 +1,7 @@
 import pytest
 from pydantic import SecretStr, ValidationError
 
-from app.api.v1.schemas.token import TokenRequest
+from app.domains.auth.schemas import TokenRequest
 
 
 def test_token_request_invalid_email() -> None:

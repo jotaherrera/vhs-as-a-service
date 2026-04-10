@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
+from app.domains.roles.crud import create_role, get_all_roles, get_role_by_id, get_role_by_name
+from app.domains.roles.schemas import RoleCreate
 from app.models.role import Roles
-from app.operations.role.crud import create_role, get_all_roles, get_role_by_id, get_role_by_name
-from app.operations.role.schemas import RoleCreate
 from tests.factories.role import RoleFactory
 
 

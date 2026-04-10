@@ -4,7 +4,30 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.fields import PasswordStr
 from app.models.role import Roles
-from app.operations.user.schemas import UserBase, UserCreateBase
+
+
+class UserBase(BaseModel):
+    email: EmailStr
+    name: str
+    last_name: str
+
+
+class UserCreateBase(UserBase):
+    password: PasswordStr
+
+
+class UserCreate(UserCreateBase):
+    role_id: int
+    is_active: bool = True
+
+
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
+    password: PasswordStr | None = None
+    name: str | None = None
+    last_name: str | None = None
+    role_id: int | None = None
+    is_active: bool | None = None
 
 
 class UserResponse(UserBase):

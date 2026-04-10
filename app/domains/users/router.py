@@ -3,15 +3,14 @@ from typing import Annotated
 from fastapi import APIRouter, status
 from fastapi.params import Depends
 
-from app.api.v1.schemas.user import UserCreateRequest, UserResponse, UsersResponse
 from app.database.session import DbSession
-from app.dependencies.auth import get_current_active_user
+from app.domains.auth.dependencies import get_current_active_user
+from app.domains.roles import crud as crud_role
+from app.domains.users import crud as crud_user
+from app.domains.users.schemas import UserCreate, UserCreateRequest, UserResponse, UsersResponse
 from app.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.models import User
 from app.models.role import Roles
-from app.operations.role import crud as crud_role
-from app.operations.user import crud as crud_user
-from app.operations.user.schemas import UserCreate
 
 router = APIRouter(prefix="/users", tags=["users"])
 

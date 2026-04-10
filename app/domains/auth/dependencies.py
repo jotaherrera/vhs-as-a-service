@@ -6,9 +6,9 @@ from pydantic import SecretStr
 
 from app.core.security import decode_token, verify_password
 from app.database.session import DbSession
+from app.domains.users import crud as crud_user
 from app.exceptions import NotFoundError, UnauthorizedError
 from app.models import User
-from app.operations.user import crud as crud_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
