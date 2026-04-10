@@ -8,12 +8,12 @@ from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 
 
-def test_list_users_admin(db_client: TestClient) -> None:
+def test_list_users_staff(db_client: TestClient) -> None:
     role = RoleFactory.create(name=Roles.STAFF)
-    admin_user = UserFactory.create(role=role)
-    normal_user = UserFactory.create()
+    staff_user = UserFactory.create(role=role)
+    customer_user = UserFactory.create()
 
-    token = create_access_token(data={"sub": str(admin_user.id)})
+    token = create_access_token(data={"sub": str(staff_user.id)})
 
     response = db_client.get("/api/v1/users", headers={"Authorization": f"Bearer {token}"})
 
@@ -21,10 +21,10 @@ def test_list_users_admin(db_client: TestClient) -> None:
     user_response = UserList.model_validate(response.json())
 
     returned_ids = {u.id for u in user_response.users}
-    assert returned_ids == {admin_user.id, normal_user.id}
+    assert returned_ids == {staff_user.id, customer_user.id}
 
 
-def test_list_users_normal_user(db_client: TestClient) -> None:
+def test_list_users_customer(db_client: TestClient) -> None:
     user = UserFactory.create()
 
     token = create_access_token(data={"sub": str(user.id)})
