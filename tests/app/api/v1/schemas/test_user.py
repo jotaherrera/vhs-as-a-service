@@ -1,7 +1,7 @@
 import pytest
 from pydantic import SecretStr, ValidationError
 
-from app.api.v1.schemas.user import UserLogin
+from app.domains.users.schemas import UserLogin
 
 
 def test_user_login_invalid_email() -> None:

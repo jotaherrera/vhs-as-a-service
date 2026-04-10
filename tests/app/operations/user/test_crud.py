@@ -2,9 +2,9 @@ from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
+from app.domains.users.crud import create_user, get_all_users, get_user_by_email, get_user_by_id
+from app.domains.users.schemas import UserCreate
 from app.models.role import Roles
-from app.operations.user.crud import create_user, get_all_users, get_user_by_email, get_user_by_id
-from app.operations.user.schemas import UserCreate
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 
