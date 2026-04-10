@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
-from app.database.seeders.bootstrap import STAFF_USER, seed_roles, seed_staff
+from app.database.bootstrap.seed import STAFF_USER, seed_roles, seed_staff
 from app.modules.roles.model import Role, Roles
 from app.modules.users.model import User
 from tests.factories.role import RoleFactory
