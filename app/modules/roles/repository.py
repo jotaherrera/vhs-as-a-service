@@ -1,26 +1,22 @@
 from sqlalchemy.orm import Session
 
 from app.modules.roles.model import Role
-from app.modules.roles.schemas import RoleCreate
 
 
-def get_all(db: Session) -> list[Role]:
-    return db.query(Role).all()
+def get_by_id(db: Session, entity_id: int) -> Role | None:
+    return db.query(Role).filter(Role.id == entity_id).first()
 
 
 def get_by_name(db: Session, name: str) -> Role | None:
     return db.query(Role).filter(Role.name == name).first()
 
 
-def get_by_id(db: Session, role_id: int) -> Role | None:
-    return db.query(Role).filter(Role.id == role_id).first()
+def get_all(db: Session) -> list[Role]:
+    return db.query(Role).all()
 
 
-def create(db: Session, role: RoleCreate) -> Role:
-    db_role = Role(**role.model_dump())
-
-    db.add(db_role)
+def create(db: Session, role: Role) -> Role:
+    db.add(role)
     db.commit()
-    db.refresh(db_role)
-
-    return db_role
+    db.refresh(role)
+    return role

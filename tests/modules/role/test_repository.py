@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.modules.roles import repository as roles_repo
-from app.modules.roles.model import Roles
-from app.modules.roles.schemas import RoleCreate
+from app.modules.roles.model import Role, Roles
 from tests.factories.role import RoleFactory
 
 
@@ -38,7 +37,7 @@ def test_get_role_by_id(db_session: Session) -> None:
 
 
 def test_create_role(db_session: Session) -> None:
-    role_create = RoleCreate(name=Roles.CUSTOMER, is_active=True)
+    role_create = Role(name=Roles.CUSTOMER, is_active=True)
 
     created_role = roles_repo.create(db_session, role_create)
 
