@@ -7,14 +7,14 @@ from pydantic import SecretStr
 from app.core.exceptions import NotFoundError, UnauthorizedError
 from app.core.security import decode_token, verify_password
 from app.database.infrastructure.session import DbSession
-from app.modules.users import repository as user_repo
+from app.modules.users import repository as users_repo
 from app.modules.users.model import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 
 def authenticate_user(db: DbSession, email: str, password: SecretStr) -> User | None:
-    db_user = user_repo.get_by_email(db, email)
+    db_user = users_repo.get_by_email(db, email)
     if db_user is None:
         return None
 
@@ -32,7 +32,7 @@ def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_scheme)
     if user_id is None:
         raise credentials_exception
 
-    user = user_repo.get_by_id(db, user_id)
+    user = users_repo.get_by_id(db, user_id)
     if user is None:
         raise credentials_exception
 
