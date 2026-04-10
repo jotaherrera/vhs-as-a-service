@@ -24,7 +24,7 @@ def create_user(db: DbSession, user_request: UserCreate) -> User:
     if db_role is None:
         raise NotFoundError(detail="Role not found")
 
-    return User(
+    user = User(
         email=user_request.email,
         password=hash_password(user_request.password.get_secret_value()),
         name=user_request.name,
@@ -32,6 +32,10 @@ def create_user(db: DbSession, user_request: UserCreate) -> User:
         is_active=True,
         role_id=db_role.id,
     )
+
+    user_repo.create(db, user)
+
+    return user
 
 
 def get_user(db: DbSession, current_user: User, user_id: int) -> User:
