@@ -2,7 +2,7 @@ from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
-from app.domains.users.crud import create_user, get_all_users, get_user_by_email, get_user_by_id
+from app.domains.users import repository as user_repo
 from app.domains.users.schemas import UserCreate
 from app.models.role import Roles
 from tests.factories.role import RoleFactory
@@ -13,7 +13,7 @@ def test_get_all_users(db_session: Session) -> None:
     user_1 = UserFactory.create()
     user_2 = UserFactory.create()
 
-    all_users = get_all_users(db_session)
+    all_users = user_repo.get_all_users(db_session)
 
     returned_ids = {u.id for u in all_users}
 
@@ -22,7 +22,7 @@ def test_get_all_users(db_session: Session) -> None:
 
 def test_get_user_by_id(db_session: Session) -> None:
     user = UserFactory.create()
-    user_db = get_user_by_id(db_session, user.id)
+    user_db = user_repo.get_user_by_id(db_session, user.id)
 
     assert user_db is not None
     assert user_db.id == user.id
@@ -31,7 +31,7 @@ def test_get_user_by_id(db_session: Session) -> None:
 
 def test_get_user_by_email(db_session: Session) -> None:
     user = UserFactory.create()
-    user_db = get_user_by_email(db_session, user.email)
+    user_db = user_repo.get_user_by_email(db_session, user.email)
 
     assert user_db is not None
     assert user_db.id == user.id
@@ -48,7 +48,7 @@ def test_create_user(db_session: Session) -> None:
         role_id=role.id,
     )
 
-    created_user = create_user(db_session, user_create)
+    created_user = user_repo.create_user(db_session, user_create)
 
     assert created_user.email == user_create.email
 

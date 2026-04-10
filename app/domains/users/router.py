@@ -6,8 +6,8 @@ from fastapi.params import Depends
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.database.session import DbSession
 from app.domains.auth.dependencies import get_current_active_user
-from app.domains.roles import crud as crud_role
-from app.domains.users import crud as crud_user
+from app.domains.roles import repository as role_repo
+from app.domains.users import repository as user_repo
 from app.domains.users.schemas import UserCreate, UserCreateRequest, UserResponse, UsersResponse
 from app.models import User
 from app.models.role import Roles
@@ -23,7 +23,7 @@ async def list_users(
     if current_user.role.name != Roles.STAFF:
         raise ForbiddenError(detail="Not authorized to perform this action")
 
-    users = crud_user.get_all_users(db)
+    users = user_repo.get_all_users(db)
     users_response = [UserResponse.model_validate(user) for user in users]
 
     return UsersResponse(users=users_response, total=len(users))
@@ -31,17 +31,17 @@ async def list_users(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(db: DbSession, user_request: UserCreateRequest) -> UserResponse:
-    potential_user = crud_user.get_user_by_email(db, user_request.email)
+    potential_user = user_repo.get_user_by_email(db, user_request.email)
     if potential_user is not None:
         raise ConflictError(detail="A user with this email already exists")
 
-    db_role = crud_role.get_role_by_name(db, user_request.role)
+    db_role = role_repo.get_role_by_name(db, user_request.role)
     if db_role is None:
         raise NotFoundError(detail="Role not found")
 
     user = UserCreate(**user_request.model_dump(exclude={"role"}), role_id=db_role.id)
 
-    return UserResponse.model_validate(crud_user.create_user(db, user))
+    return UserResponse.model_validate(user_repo.create_user(db, user))
 
 
 @router.get("/me")
@@ -60,7 +60,7 @@ async def get_user(
     if current_user.id != user_id and current_user.role.name != Roles.STAFF:
         raise ForbiddenError(detail="Not authorized to perform this action")
 
-    user = crud_user.get_user_by_id(db, int(user_id))
+    user = user_repo.get_user_by_id(db, int(user_id))
     if not user:
         raise NotFoundError(detail="User not found")
 
