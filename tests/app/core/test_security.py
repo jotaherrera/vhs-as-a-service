@@ -5,7 +5,8 @@ import pytest
 from dateutil.tz import UTC
 from freezegun import freeze_time
 
-from app.config import get_settings
+from app.core.config import get_settings
+from app.core.exceptions import UnauthorizedError
 from app.core.security import (
     ALGORITHM,
     create_access_token,
@@ -13,7 +14,6 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
-from app.exceptions import UnauthorizedError
 
 TOKEN_TO_EXPIRE_MINUTES = 5
 

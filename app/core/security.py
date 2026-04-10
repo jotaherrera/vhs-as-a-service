@@ -4,8 +4,8 @@ from typing import Any
 import jwt
 from passlib.context import CryptContext
 
-from app.config import get_settings
-from app.exceptions import UnauthorizedError
+from app.core.config import get_settings
+from app.core.exceptions import UnauthorizedError
 
 ALGORITHM = "HS256"
 DEFAULT_ACCESS_TOKEN_EXPIRE_MINUTES = 15

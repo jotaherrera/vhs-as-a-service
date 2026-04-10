@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
-from app.fields import PasswordStr
+from app.core.fields import PasswordStr
 from app.models.role import Roles
 
 

@@ -1,6 +1,6 @@
 import pytest
 
-from app.config import Settings
+from app.core.config import Settings
 
 
 def test_settings_loads_app_env_vars() -> None:
