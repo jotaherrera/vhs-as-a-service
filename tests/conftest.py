@@ -11,6 +11,7 @@ from testcontainers.postgres import PostgresContainer
 
 from app.database.infrastructure.session import get_db
 from app.main import app
+from tests.factories.movie import MovieFactory
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
 
@@ -89,11 +90,13 @@ def test_session_local(engine: Engine) -> sessionmaker[Session]:
 def setup_factories(db_session: Session) -> None:
     RoleFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
     UserFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
+    MovieFactory._meta.sqlalchemy_session = db_session  # ty: ignore[unresolved-attribute]  # noqa: SLF001
 
 
 def cleanup_factories() -> None:
     RoleFactory._meta.sqlalchemy_session = None  # ty: ignore[unresolved-attribute]  # noqa: SLF001
     UserFactory._meta.sqlalchemy_session = None  # ty: ignore[unresolved-attribute]  # noqa: SLF001
+    MovieFactory._meta.sqlalchemy_session = None  # ty: ignore[unresolved-attribute]  # noqa: SLF001
 
 
 @pytest.fixture
