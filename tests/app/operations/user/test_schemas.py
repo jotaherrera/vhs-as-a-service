@@ -1,7 +1,7 @@
 import pytest
 from pydantic import SecretStr, ValidationError
 
-from app.domains.users.schemas import UserCreateBase, UserUpdate
+from app.modules.users.schemas import UserCreateBase, UserUpdate
 
 
 def test_user_create_base_password_printing() -> None:

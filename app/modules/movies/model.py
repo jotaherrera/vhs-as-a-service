@@ -5,7 +5,7 @@ from sqlalchemy import Boolean, Date, DateTime, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import Float
 
-from app.models import Base
+from app.database.infrastructure.base import Base
 
 
 class Movie(Base):

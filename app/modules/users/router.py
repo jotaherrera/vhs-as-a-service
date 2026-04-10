@@ -4,13 +4,13 @@ from fastapi import APIRouter, status
 from fastapi.params import Depends
 
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
-from app.database.session import DbSession
-from app.domains.auth.dependencies import get_current_active_user
-from app.domains.roles import repository as role_repo
-from app.domains.users import repository as user_repo
-from app.domains.users.schemas import UserCreate, UserCreateRequest, UserResponse, UsersResponse
-from app.models import User
-from app.models.role import Roles
+from app.database.infrastructure.session import DbSession
+from app.modules.auth.dependencies import get_current_active_user
+from app.modules.roles import repository as role_repo
+from app.modules.roles.model import Roles
+from app.modules.users import repository as user_repo
+from app.modules.users.model import User
+from app.modules.users.schemas import UserCreate, UserCreateRequest, UserResponse, UsersResponse
 
 router = APIRouter(prefix="/users", tags=["users"])
 

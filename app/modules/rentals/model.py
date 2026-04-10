@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import Integer, String
 
-from app.models import Base
+from app.database.infrastructure.base import Base
 
 
 class RentalStatus(StrEnum):
