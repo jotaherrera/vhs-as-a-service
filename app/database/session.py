@@ -5,12 +5,11 @@ from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.config import get_settings
+from app.core.config import get_settings
 
 engine = create_engine(
     url=get_settings().database.url,
     pool_pre_ping=True,
-    echo=get_settings().app.debug,
     connect_args={
         "options": "-c search_path=app,public",
     },

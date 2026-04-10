@@ -2,13 +2,13 @@ import pytest
 from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
+from app.core.exceptions import NotFoundError, UnauthorizedError
 from app.core.security import create_access_token
 from app.domains.auth.dependencies import (
     authenticate_user,
     get_current_active_user,
     get_current_user,
 )
-from app.exceptions import NotFoundError, UnauthorizedError
 from tests.factories.user import UserFactory
 
 

@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 
 from app.api.v1 import v1_router
-from app.config import Settings, get_settings
-from app.handlers import add_exception_handlers
+from app.core.config import Settings, get_settings
+from app.core.handlers import add_exception_handlers
 
 app = FastAPI(
     title=get_settings().app.name,

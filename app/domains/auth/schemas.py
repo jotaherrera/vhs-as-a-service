@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr
 
-from app.fields import PasswordStr
+from app.core.fields import PasswordStr
 
 
 class TokenRequest(BaseModel):
