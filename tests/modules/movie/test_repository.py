@@ -48,7 +48,9 @@ def test_get_all_with_is_active_true_returns_only_active(movie_repo: MovieReposi
     assert result[0].is_active is True
 
 
-def test_get_all_with_is_active_false_returns_only_inactive(movie_repo: MovieRepository) -> None:
+def test_get_all_with_is_active_false_returns_only_inactive(
+    movie_repo: MovieRepository,
+) -> None:
     MovieFactory.create(is_active=True)
     inactive = MovieFactory.create(is_active=False)
 
@@ -116,9 +118,7 @@ def test_find_by_external_id_returns_movie_when_match(
     assert result.id == movie.id
 
 
-def test_find_by_external_id_returns_none_when_no_match(
-    movie_repo: MovieRepository,
-) -> None:
+def test_find_by_external_id_returns_none_when_no_match(movie_repo: MovieRepository) -> None:
     query = ExternalId(provider="tmdb", external_id="does-not-exist")
 
     result = movie_repo.find_by_external_id(query)

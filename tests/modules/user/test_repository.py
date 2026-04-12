@@ -1,56 +1,88 @@
+import pytest
 from sqlalchemy.orm import Session
 
-from app.modules.roles.model import Roles
-from app.modules.users import repository as users_repo
 from app.modules.users.model import User
-from tests.factories.role import RoleFactory
+from app.modules.users.repository import UserRepository
 from tests.factories.user import UserFactory
 
 
-def test_get_all_users(db_session: Session) -> None:
-    user_1 = UserFactory.create()
-    user_2 = UserFactory.create()
-
-    all_users = users_repo.get_all(db_session)
-
-    returned_ids = {u.id for u in all_users}
-
-    assert returned_ids == {user_1.id, user_2.id}
+@pytest.fixture
+def user_repo(db_session: Session) -> UserRepository:
+    return UserRepository(db_session)
 
 
-def test_get_user_by_id(db_session: Session) -> None:
+def test_find_by_id_returns_user_when_exists(user_repo: UserRepository) -> None:
     user = UserFactory.create()
-    user_db = users_repo.get_by_id(db_session, user.id)
 
-    assert user_db is not None
-    assert user_db.id == user.id
-    assert user_db.email == user.email
+    result = user_repo.find_by_id(user.id)
+
+    assert result is not None
+    assert result.id == user.id
+    assert result.email == user.email
 
 
-def test_get_user_by_email(db_session: Session) -> None:
+def test_find_by_id_returns_none_when_not_found(user_repo: UserRepository) -> None:
+    result = user_repo.find_by_id(999_999)
+
+    assert result is None
+
+
+def test_get_by_email_returns_user_when_exists(user_repo: UserRepository) -> None:
     user = UserFactory.create()
-    user_db = users_repo.get_by_email(db_session, user.email)
 
-    assert user_db is not None
-    assert user_db.id == user.id
-    assert user_db.email == user.email
+    result = user_repo.get_by_email(user.email)
+
+    assert result is not None
+    assert result.id == user.id
+    assert result.email == user.email
 
 
-def test_create_user(db_session: Session) -> None:
-    role = RoleFactory.create(name=Roles.CUSTOMER)
-    user_create = User(
-        email="johndoe@mail.com",
-        name="John",
-        last_name="Doe",
-        password="tests-password",  # noqa: S106
-        role=role,
-        is_active=True,
-    )
+def test_get_by_email_returns_none_when_not_found(user_repo: UserRepository) -> None:
+    result = user_repo.get_by_email("nonexistent@mail.com")
 
-    created_user = users_repo.create(db_session, user_create)
+    assert result is None
 
-    assert created_user.email == user_create.email
 
-    assert created_user.name == user_create.name
-    assert created_user.last_name == user_create.last_name
-    assert created_user.role_id == role.id
+def test_get_all_returns_all_users_without_filter(user_repo: UserRepository) -> None:
+    UserFactory.create(is_active=True)
+    UserFactory.create(is_active=False)
+
+    result = user_repo.get_all()
+
+    assert len(result) == 2
+
+
+def test_get_all_with_is_active_true_returns_only_active(user_repo: UserRepository) -> None:
+    active = UserFactory.create(is_active=True)
+    UserFactory.create(is_active=False)
+
+    result = user_repo.get_all(is_active=True)
+
+    assert len(result) == 1
+    assert result[0].id == active.id
+    assert result[0].is_active is True
+
+
+def test_get_all_with_is_active_false_returns_only_inactive(
+    user_repo: UserRepository,
+) -> None:
+    UserFactory.create(is_active=True)
+    inactive = UserFactory.create(is_active=False)
+
+    result = user_repo.get_all(is_active=False)
+
+    assert len(result) == 1
+    assert result[0].id == inactive.id
+    assert result[0].is_active is False
+
+
+def test_create_persists_user_and_returns_it(
+    user_repo: UserRepository,
+    db_session: Session,
+) -> None:
+    user = UserFactory.build()
+
+    result = user_repo.create(user)
+
+    assert result.id is not None
+    assert db_session.get(User, result.id) is not None

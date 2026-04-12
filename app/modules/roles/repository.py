@@ -1,22 +1,32 @@
+from sqlalchemy import Select, Sequence
 from sqlalchemy.orm import Session
 
+from app.modules.roles.contracts import AbstractRoleRepository
 from app.modules.roles.model import Role
 
 
-def get_by_id(db: Session, entity_id: int) -> Role | None:
-    return db.query(Role).filter(Role.id == entity_id).first()
+class RoleRepository(AbstractRoleRepository):
+    def __init__(self, db: Session) -> None:
+        self.db = db
 
+    def get_all(self, *, is_active: bool | None = None) -> Sequence[Role]:
+        stmt = Select(Role)
 
-def get_by_name(db: Session, name: str) -> Role | None:
-    return db.query(Role).filter(Role.name == name).first()
+        if is_active is not None:
+            stmt = stmt.where(Role.is_active.is_(is_active))
 
+        return self.db.scalars(stmt).all()
 
-def get_all(db: Session) -> list[Role]:
-    return db.query(Role).all()
+    def find_by_id(self, entity_id: int) -> Role | None:
+        stmt = Select(Role).where(Role.id == entity_id)
+        return self.db.scalar(stmt)
 
+    def create(self, entity: Role) -> Role:
+        self.db.add(entity)
+        self.db.commit()
+        self.db.refresh(entity)
+        return entity
 
-def create(db: Session, role: Role) -> Role:
-    db.add(role)
-    db.commit()
-    db.refresh(role)
-    return role
+    def get_by_name(self, name: str) -> Role | None:
+        stmt = Select(Role).where(Role.name == name)
+        return self.db.scalar(stmt)
