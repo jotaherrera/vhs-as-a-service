@@ -3,11 +3,12 @@ from collections.abc import Sequence
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.modules.movies.contracts import AbstractMovieRepository
 from app.modules.movies.model import Movie, MovieExternalId
 from app.modules.movies.schemas import ExternalId
 
 
-class MovieRepository:
+class MovieRepository(AbstractMovieRepository):
     def __init__(self, db: Session) -> None:
         self.db = db
 
@@ -23,11 +24,11 @@ class MovieRepository:
         stmt = select(Movie).where(Movie.id == entity_id)
         return self.db.scalar(stmt)
 
-    def create(self, movie: Movie) -> Movie:
-        self.db.add(movie)
+    def create(self, entity: Movie) -> Movie:
+        self.db.add(entity)
         self.db.commit()
-        self.db.refresh(movie)
-        return movie
+        self.db.refresh(entity)
+        return entity
 
     def get_by_name(self, name: str) -> Sequence[Movie]:
         stmt = select(Movie).where(Movie.title.ilike(f"%{name}%"))
