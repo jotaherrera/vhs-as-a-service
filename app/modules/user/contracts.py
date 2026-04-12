@@ -1,5 +1,5 @@
 from app.modules.shared.contracts import AbstractRepository
-from app.modules.users.model import User
+from app.modules.user.model import User
 
 
 class AbstractUserRepository(AbstractRepository[User]):

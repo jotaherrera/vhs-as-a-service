@@ -2,16 +2,16 @@ import pytest
 
 from app.core.exceptions import ConflictError
 from app.database.infrastructure.session import DbSession
-from app.modules.movies.model import MovieExternalId
-from app.modules.movies.repository import MovieRepository
-from app.modules.movies.schemas import (
+from app.modules.movie.model import MovieExternalId
+from app.modules.movie.repository import MovieRepository
+from app.modules.movie.schemas import (
     ExternalId,
     MovieCreate,
     MovieResponsePrivate,
     MovieResponsePublic,
 )
-from app.modules.movies.service import MovieService
-from app.modules.roles.model import Roles
+from app.modules.movie.service import MovieService
+from app.modules.role.model import RoleName
 from tests.factories.movie import MovieFactory
 from tests.factories.role import RoleFactory
 from tests.factories.user import UserFactory
@@ -97,7 +97,7 @@ def test_list_movies_for_staff_returns_private_schema(service: MovieService) -> 
 def test_list_movies_routes_customer_to_public_listing(service: MovieService) -> None:
     MovieFactory.create(is_active=True)
     MovieFactory.create(is_active=False)
-    customer = UserFactory.create(role=RoleFactory.create(name=Roles.CUSTOMER))
+    customer = UserFactory.create(role=RoleFactory.create(name=RoleName.CUSTOMER))
 
     result = service.list_movies(customer)
 
@@ -108,7 +108,7 @@ def test_list_movies_routes_customer_to_public_listing(service: MovieService) ->
 def test_list_movies_routes_staff_to_private_listing(service: MovieService) -> None:
     MovieFactory.create(is_active=True)
     MovieFactory.create(is_active=False)
-    staff = UserFactory.create(role=RoleFactory.create(name=Roles.STAFF))
+    staff = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
 
     result = service.list_movies(staff)
 

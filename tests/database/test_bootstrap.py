@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
 from app.database.bootstrap.seed import STAFF_USER, seed_roles, seed_staff
-from app.modules.roles.model import Role, Roles
-from app.modules.users.model import User
+from app.modules.role.model import Role, RoleName
+from app.modules.user.model import User
 from tests.factories.role import RoleFactory
 
 
@@ -12,20 +12,20 @@ def test_seed_roles(db_session: Session) -> None:
 
     names = {r.name for r in db_session.query(Role).all()}
 
-    assert names == set(Roles)
+    assert names == set(RoleName)
 
 
 def test_seed_roles_is_idempotent(db_session: Session) -> None:
-    RoleFactory.create(name=Roles.CUSTOMER)
+    RoleFactory.create(name=RoleName.CUSTOMER)
 
     seed_roles(db_session)
 
     count = db_session.query(Role).count()
-    assert count == len(Roles)
+    assert count == len(RoleName)
 
 
 def test_seed_staff(db_session: Session) -> None:
-    RoleFactory.create(name=Roles.STAFF)
+    RoleFactory.create(name=RoleName.STAFF)
 
     seed_staff(db_session)
 
@@ -37,7 +37,7 @@ def test_seed_staff(db_session: Session) -> None:
 
 
 def test_seed_staff_is_idempotent(db_session: Session) -> None:
-    RoleFactory.create(name=Roles.STAFF)
+    RoleFactory.create(name=RoleName.STAFF)
 
     seed_staff(db_session)
     seed_staff(db_session)

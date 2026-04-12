@@ -4,7 +4,7 @@ from app.core.exceptions import UnauthorizedError
 from app.core.security import create_access_token
 from app.modules.auth.dependencies import authenticate_user
 from app.modules.auth.schemas import TokenCreate
-from app.modules.users.contracts import AbstractUserRepository
+from app.modules.user.contracts import AbstractUserRepository
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

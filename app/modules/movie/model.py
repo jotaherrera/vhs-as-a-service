@@ -16,7 +16,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import Float
 
 from app.database.infrastructure.base import Base
-from app.modules.rentals.model import Rental
+from app.modules.rental.model import Rental
 
 
 class Movie(Base):

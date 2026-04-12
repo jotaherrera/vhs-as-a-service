@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.core.fields import PasswordStr
-from app.modules.roles.model import Roles
+from app.modules.role.model import RoleName
 
 
 class UserCreate(BaseModel):
@@ -11,7 +11,7 @@ class UserCreate(BaseModel):
     name: str
     last_name: str
     password: PasswordStr
-    role: Roles
+    role: RoleName
 
 
 class UserUpdate(BaseModel):

@@ -1,13 +1,13 @@
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.core.security import hash_password
 from app.database.infrastructure.session import DbSession
-from app.modules.roles.contracts import AbstractRoleRepository
-from app.modules.roles.model import Roles
-from app.modules.roles.repository import RoleRepository
-from app.modules.users.contracts import AbstractUserRepository
-from app.modules.users.model import User
-from app.modules.users.repository import UserRepository
-from app.modules.users.schemas import UserCreate, UserList, UserResponse
+from app.modules.role.contracts import AbstractRoleRepository
+from app.modules.role.model import RoleName
+from app.modules.role.repository import RoleRepository
+from app.modules.user.contracts import AbstractUserRepository
+from app.modules.user.model import User
+from app.modules.user.repository import UserRepository
+from app.modules.user.schemas import UserCreate, UserList, UserResponse
 
 
 class UserService:
@@ -20,7 +20,7 @@ class UserService:
         self.role_repo = role_repo
 
     def list_all_users(self, current_user: User) -> UserList:
-        if current_user.role.name != Roles.STAFF:
+        if current_user.role.name != RoleName.STAFF:
             raise ForbiddenError(detail="Not authorized to perform this action")
 
         users = self.user_repo.get_all()
@@ -50,7 +50,7 @@ class UserService:
         return UserResponse.model_validate(self.user_repo.create(user))
 
     def get_user_profile(self, current_user: User, user_id: int) -> UserResponse:
-        if current_user.id != user_id and current_user.role.name != Roles.STAFF:
+        if current_user.id != user_id and current_user.role.name != RoleName.STAFF:
             raise ForbiddenError(detail="Not authorized to perform this action")
 
         user = self.user_repo.find_by_id(int(user_id))

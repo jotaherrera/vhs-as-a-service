@@ -6,8 +6,8 @@ from pydantic import SecretStr
 
 from app.core.exceptions import NotFoundError, UnauthorizedError
 from app.core.security import decode_token, verify_password
-from app.modules.users.model import User
-from app.modules.users.repository import UserRepo
+from app.modules.user.model import User
+from app.modules.user.repository import UserRepo
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 

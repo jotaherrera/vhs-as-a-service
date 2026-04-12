@@ -2,7 +2,7 @@ from factory import Faker, LazyFunction, SubFactory
 from factory.alchemy import SQLAlchemyModelFactory
 
 from app.core.security import hash_password
-from app.modules.users.model import User
+from app.modules.user.model import User
 from tests.factories.role import RoleFactory
 
 

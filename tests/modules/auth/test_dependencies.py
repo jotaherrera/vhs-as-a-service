@@ -9,8 +9,8 @@ from app.modules.auth.dependencies import (
     get_current_active_user,
     get_current_user,
 )
-from app.modules.users.contracts import AbstractUserRepository
-from app.modules.users.repository import UserRepository
+from app.modules.user.contracts import AbstractUserRepository
+from app.modules.user.repository import UserRepository
 from tests.factories.user import UserFactory
 
 
