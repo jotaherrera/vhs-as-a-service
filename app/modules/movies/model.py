@@ -1,11 +1,22 @@
 from datetime import date, datetime
 from typing import ClassVar
 
-from sqlalchemy import Boolean, Date, DateTime, Integer, String, Text, func
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import Float
 
 from app.database.infrastructure.base import Base
+from app.modules.rentals.model import Rental
 
 
 class Movie(Base):
@@ -32,13 +43,45 @@ class Movie(Base):
 
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
-    rentals = relationship("Rental", back_populates="movie")
+    rentals: Mapped[list[Rental]] = relationship("Rental", back_populates="movie")
+    external_ids: Mapped[list["MovieExternalId"]] = relationship(
+        "MovieExternalId",
+        back_populates="movie",
+    )
 
     def __repr__(self) -> str:
         return (
-            f"Movie(id={self.id}, title={self.title!r}, genre={self.genre!r}, "
-            f"director={self.director!r}, critic_rating={self.critic_rating}, "
-            f"age_rating={self.age_rating!r}, release_date={self.release_date}, "
-            f"copies_available={self.copies_available}), rental_price={self.rental_price}, "
-            f"is_active={self.is_active}"
+            f"<Movie(id={self.id}, "
+            f"title={self.title!r}, "
+            f"genre={self.genre!r}, "
+            f"director={self.director!r}, "
+            f"critic_rating={self.critic_rating}, "
+            f"age_rating={self.age_rating!r}, "
+            f"release_date={self.release_date}, "
+            f"copies_available={self.copies_available}), "
+            f"rental_price={self.rental_price}, "
+            f"is_active={self.is_active}>"
+        )
+
+
+class MovieExternalId(Base):
+    __tablename__ = "movie_external_ids"
+    __table_args__: ClassVar[tuple] = (
+        UniqueConstraint("provider", "external_id", name="uq_movie_external_id_per_provider"),
+        {"schema": "app"},
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    movie_id: Mapped[int] = mapped_column(ForeignKey("app.movies.id"), nullable=False)
+    provider: Mapped[str] = mapped_column(String(50), nullable=False)
+    external_id: Mapped[str] = mapped_column(String(100), nullable=False)
+
+    movie: Mapped[Movie] = relationship("Movie", back_populates="external_ids")
+
+    def __repr__(self) -> str:
+        return (
+            f"<MovieExternalId(id={self.id!r}, "
+            f"movie_id={self.movie_id!r}, "
+            f"provider={self.provider!r}, "
+            f"external_id={self.external_id!r})>"
         )
