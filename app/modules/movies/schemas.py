@@ -48,7 +48,7 @@ class MovieCreate(BaseModel):
     description: str
     genre: str
     director: str
-    critic_rating: str
+    critic_rating: int
     age_rating: str
     release_date: str
     rental_price: float

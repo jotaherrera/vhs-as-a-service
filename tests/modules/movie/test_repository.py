@@ -34,7 +34,7 @@ def test_get_all_returns_all_movies_without_filter(movie_repo: MovieRepository) 
 
     result = movie_repo.get_all()
 
-    assert len(result) == 2  # noqa: PLR2004
+    assert len(result) == 2
 
 
 def test_get_all_with_is_active_true_returns_only_active(movie_repo: MovieRepository) -> None:
@@ -78,7 +78,7 @@ def test_get_by_name_returns_partial_matches(movie_repo: MovieRepository) -> Non
 
     result = movie_repo.get_by_name("matrix")
 
-    assert len(result) == 2  # noqa: PLR2004
+    assert len(result) == 2
     assert all("matrix" in m.title.lower() for m in result)
 
 
