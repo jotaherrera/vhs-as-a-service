@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from factory import LazyFunction, SubFactory
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.modules.rentals.model import Rental, RentalStatus
+from app.modules.rental.model import Rental, RentalStatus
 from tests.factories.movie import MovieFactory
 from tests.factories.user import UserFactory
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.modules.auth import service as auth_service
 from app.modules.auth.schemas import TokenCreate, TokenResponse
-from app.modules.users.repository import UserRepo
+from app.modules.user.repository import UserRepo
 
 router = APIRouter(prefix="/token", tags=["token"])
 

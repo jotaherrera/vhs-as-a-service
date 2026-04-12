@@ -2,8 +2,8 @@ from abc import abstractmethod
 
 from sqlalchemy import Sequence
 
-from app.modules.movies.model import Movie
-from app.modules.movies.schemas import ExternalId
+from app.modules.movie.model import Movie
+from app.modules.movie.schemas import ExternalId
 from app.modules.shared.contracts import AbstractRepository
 
 

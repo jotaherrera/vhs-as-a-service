@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from app.modules.users.model import User
-from app.modules.users.repository import UserRepository
+from app.modules.user.model import User
+from app.modules.user.repository import UserRepository
 from tests.factories.user import UserFactory
 
 

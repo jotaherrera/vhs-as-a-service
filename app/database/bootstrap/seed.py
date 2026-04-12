@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.database.infrastructure.session import SessionLocal
-from app.modules.roles.model import Role, Roles
-from app.modules.users.model import User
+from app.modules.role.model import Role, RoleName
+from app.modules.user.model import User
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,8 +18,10 @@ STAFF_USER = {
 
 
 def seed_roles(db: Session) -> None:
-    for name in Roles:
-        if not db.query(Role).filter(Role.name == name).first():
+    for name in RoleName:
+        exists = db.query(Role).filter(Role.name == name).first()
+
+        if not exists:
             db.add(Role(name=name, is_active=True))
 
     db.commit()
@@ -31,7 +33,7 @@ def seed_staff(db: Session) -> None:
         LOGGER.info("Staff user already exists, skipping.")
         return
 
-    staff_role = db.query(Role).filter(Role.name == Roles.STAFF).one()
+    staff_role = db.query(Role).filter(Role.name == RoleName.STAFF).one()
 
     db.add(
         User(

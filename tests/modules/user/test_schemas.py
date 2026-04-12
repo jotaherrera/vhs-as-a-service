@@ -1,8 +1,8 @@
 import pytest
 from pydantic import SecretStr, ValidationError
 
-from app.modules.roles.model import Roles
-from app.modules.users.schemas import UserCreate, UserUpdate
+from app.modules.role.model import RoleName
+from app.modules.user.schemas import UserCreate, UserUpdate
 
 
 def test_user_create_base_password_printing() -> None:
@@ -12,7 +12,7 @@ def test_user_create_base_password_printing() -> None:
         name="John",
         last_name="Doe",
         password=SecretStr(password),
-        role=Roles.STAFF,
+        role=RoleName.STAFF,
     )
 
     assert user_create.password != password
@@ -27,7 +27,7 @@ def test_user_create_base_password_min_length() -> None:
             name="John",
             last_name="Doe",
             password=SecretStr(short_password),
-            role=Roles.STAFF,
+            role=RoleName.STAFF,
         )
 
     errors = exc.value.errors()
@@ -44,7 +44,7 @@ def test_user_create_base_password_max_length() -> None:
             name="John",
             last_name="Doe",
             password=SecretStr(long_password),
-            role=Roles.STAFF,
+            role=RoleName.STAFF,
         )
 
     errors = exc.value.errors()

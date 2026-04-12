@@ -5,8 +5,8 @@ from sqlalchemy import Select, Sequence
 from sqlalchemy.orm import Session
 
 from app.database.infrastructure.session import DbSession
-from app.modules.users.contracts import AbstractUserRepository
-from app.modules.users.model import User
+from app.modules.user.contracts import AbstractUserRepository
+from app.modules.user.model import User
 
 
 class UserRepository(AbstractUserRepository):

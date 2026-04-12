@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from app.modules.movies.model import Movie, MovieExternalId
-from app.modules.movies.repository import MovieRepository
-from app.modules.movies.schemas import ExternalId
+from app.modules.movie.model import Movie, MovieExternalId
+from app.modules.movie.repository import MovieRepository
+from app.modules.movie.schemas import ExternalId
 from tests.factories.movie import MovieFactory
 
 

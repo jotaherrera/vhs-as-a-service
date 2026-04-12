@@ -3,7 +3,7 @@ from datetime import date
 from factory import Faker
 from factory.alchemy import SQLAlchemyModelFactory
 
-from app.modules.movies.model import Movie
+from app.modules.movie.model import Movie
 
 
 class MovieFactory(SQLAlchemyModelFactory):

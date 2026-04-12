@@ -2,13 +2,13 @@ from datetime import datetime
 from enum import StrEnum
 from typing import ClassVar
 
-from sqlalchemy import Boolean, DateTime, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy import Boolean, DateTime, Enum, Integer, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.infrastructure.base import Base
 
 
-class Roles(StrEnum):
+class RoleName(StrEnum):
     STAFF = "STAFF"
     CUSTOMER = "CUSTOMER"
 
@@ -19,7 +19,11 @@ class Role(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(
+        Enum(RoleName, name="role_name", schema="app"),
+        unique=True,
+        nullable=False,
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -39,13 +43,9 @@ class Role(Base):
 
     def __repr__(self) -> str:
         return (
-            f"Role(id={self.id}, name={str(self.name)!r}, is_active={self.is_active}, "
-            f"created_at={self.created_at}, modified_at={self.modified_at})"
+            f"<Role(id={self.id}, "
+            f"name={str(self.name)!r}, "
+            f"is_active={self.is_active}, "
+            f"created_at={self.created_at}, "
+            f"modified_at={self.modified_at})>"
         )
-
-    @validates("name")
-    def validate_name(self, _key: str, value: str) -> str:
-        if value not in Roles:
-            msg = f"Invalid role: {value}. Must be one of {list(Roles)}"
-            raise ValueError(msg)
-        return value

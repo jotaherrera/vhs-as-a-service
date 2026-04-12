@@ -1,13 +1,13 @@
 from app.core.exceptions import ConflictError
-from app.modules.movies.contracts import AbstractMovieRepository
-from app.modules.movies.model import Movie, MovieExternalId
-from app.modules.movies.schemas import (
+from app.modules.movie.contracts import AbstractMovieRepository
+from app.modules.movie.model import Movie, MovieExternalId
+from app.modules.movie.schemas import (
     MovieCreate,
     MovieResponsePrivate,
     MovieResponsePublic,
 )
-from app.modules.roles.model import Roles
-from app.modules.users.model import User
+from app.modules.role.model import RoleName
+from app.modules.user.model import User
 
 
 class MovieService:
@@ -26,7 +26,7 @@ class MovieService:
         self,
         current_user: User,
     ) -> list[MovieResponsePublic] | list[MovieResponsePrivate]:
-        if current_user.role.name != Roles.STAFF:
+        if current_user.role.name != RoleName.STAFF:
             return self.list_movies_for_customer()
 
         return self.list_movies_for_staff()

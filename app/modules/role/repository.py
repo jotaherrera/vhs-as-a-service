@@ -1,8 +1,8 @@
 from sqlalchemy import Select, Sequence
 from sqlalchemy.orm import Session
 
-from app.modules.roles.contracts import AbstractRoleRepository
-from app.modules.roles.model import Role
+from app.modules.role.contracts import AbstractRoleRepository
+from app.modules.role.model import Role, RoleName
 
 
 class RoleRepository(AbstractRoleRepository):
@@ -27,6 +27,6 @@ class RoleRepository(AbstractRoleRepository):
         self.db.refresh(entity)
         return entity
 
-    def get_by_name(self, name: str) -> Role | None:
+    def get_by_name(self, name: RoleName) -> Role | None:
         stmt = Select(Role).where(Role.name == name)
         return self.db.scalar(stmt)

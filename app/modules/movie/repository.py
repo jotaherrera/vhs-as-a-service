@@ -1,9 +1,9 @@
 from sqlalchemy import Sequence, select
 from sqlalchemy.orm import Session
 
-from app.modules.movies.contracts import AbstractMovieRepository
-from app.modules.movies.model import Movie, MovieExternalId
-from app.modules.movies.schemas import ExternalId
+from app.modules.movie.contracts import AbstractMovieRepository
+from app.modules.movie.model import Movie, MovieExternalId
+from app.modules.movie.schemas import ExternalId
 
 
 class MovieRepository(AbstractMovieRepository):
