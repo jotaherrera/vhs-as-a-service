@@ -1,22 +1,45 @@
+from collections.abc import Sequence
+
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.modules.movies.model import Movie
+from app.modules.movies.model import Movie, MovieExternalId
+from app.modules.movies.schemas import ExternalId
 
 
-def get_by_id(db: Session, entity_id: int) -> Movie | None:
-    return db.query(Movie).filter(Movie.id == entity_id).first()
+class MovieRepository:
+    def __init__(self, db: Session) -> None:
+        self.db = db
 
+    def get_all(self, *, is_active: bool | None = None) -> Sequence[Movie]:
+        stmt = select(Movie)
 
-def get_by_name(db: Session, name: str) -> list[Movie]:
-    return db.query(Movie).filter(Movie.title.ilike(f"%{name}%")).all()
+        if is_active is not None:
+            stmt = stmt.where(Movie.is_active.is_(is_active))
 
+        return self.db.scalars(stmt).all()
 
-def get_all(db: Session) -> list[Movie]:
-    return db.query(Movie).all()
+    def find_by_id(self, entity_id: int) -> Movie | None:
+        stmt = select(Movie).where(Movie.id == entity_id)
+        return self.db.scalar(stmt)
 
+    def create(self, movie: Movie) -> Movie:
+        self.db.add(movie)
+        self.db.commit()
+        self.db.refresh(movie)
+        return movie
 
-def create(db: Session, movie: Movie) -> Movie:
-    db.add(movie)
-    db.commit()
-    db.refresh(movie)
-    return movie
+    def get_by_name(self, name: str) -> Sequence[Movie]:
+        stmt = select(Movie).where(Movie.title.ilike(f"%{name}%"))
+        return self.db.scalars(stmt).all()
+
+    def find_by_external_id(self, external_id: ExternalId) -> Movie | None:
+        stmt = (
+            select(Movie)
+            .join(Movie.external_ids)
+            .where(
+                MovieExternalId.provider == external_id.provider,
+                MovieExternalId.external_id == external_id.external_id,
+            )
+        )
+        return self.db.scalar(stmt)
