@@ -3,43 +3,42 @@ from typing import Annotated
 from fastapi import APIRouter, status
 from fastapi.params import Depends
 
-from app.database.infrastructure.session import DbSession
 from app.modules.auth.dependencies import get_current_active_user
-from app.modules.users import service as user_service
 from app.modules.users.model import User
 from app.modules.users.schemas import UserCreate, UserList, UserResponse
+from app.modules.users.service import UserService, get_user_service
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/")
 async def list_users(
-    db: DbSession,
+    service: Annotated[UserService, Depends(get_user_service)],
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UserList:
-    users = user_service.list_users(db, current_user)
-    users_response = [UserResponse.model_validate(user) for user in users]
-    return UserList(users=users_response, total=len(users))
+    return service.list_all_users(current_user)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(db: DbSession, user_request: UserCreate) -> UserResponse:
-    user = user_service.create_user(db, user_request)
-    return UserResponse.model_validate(user)
+async def create_user(
+    service: Annotated[UserService, Depends(get_user_service)],
+    user_request: UserCreate,
+) -> UserResponse:
+    return service.register_user(user_request)
 
 
 @router.get("/me")
 async def get_own_user(
+    service: Annotated[UserService, Depends(get_user_service)],
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UserResponse:
-    return UserResponse.model_validate(current_user)
+    return service.get_user_profile(current_user, current_user.id)  # ???
 
 
 @router.get("/{user_id}")
 async def get_user(
-    db: DbSession,
+    service: Annotated[UserService, Depends(get_user_service)],
     current_user: Annotated[User, Depends(get_current_active_user)],
     user_id: int,
 ) -> UserResponse:
-    user = user_service.get_user(db, current_user, user_id)
-    return UserResponse.model_validate(user)
+    return service.get_user_profile(current_user, user_id)

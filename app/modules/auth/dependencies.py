@@ -6,15 +6,14 @@ from pydantic import SecretStr
 
 from app.core.exceptions import NotFoundError, UnauthorizedError
 from app.core.security import decode_token, verify_password
-from app.database.infrastructure.session import DbSession
-from app.modules.users import repository as users_repo
 from app.modules.users.model import User
+from app.modules.users.repository import UserRepo
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 
-def authenticate_user(db: DbSession, email: str, password: SecretStr) -> User | None:
-    db_user = users_repo.get_by_email(db, email)
+def authenticate_user(user_repo: UserRepo, email: str, password: SecretStr) -> User | None:
+    db_user = user_repo.get_by_email(email)
     if db_user is None:
         return None
 
@@ -24,7 +23,7 @@ def authenticate_user(db: DbSession, email: str, password: SecretStr) -> User | 
     return db_user
 
 
-def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_scheme)]) -> User:
+def get_current_user(user_repo: UserRepo, token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     credentials_exception = UnauthorizedError(detail="Credentials could not be validated")
 
     payload = decode_token(token)
@@ -32,7 +31,7 @@ def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_scheme)
     if user_id is None:
         raise credentials_exception
 
-    user = users_repo.get_by_id(db, user_id)
+    user = user_repo.find_by_id(user_id)
     if user is None:
         raise credentials_exception
 

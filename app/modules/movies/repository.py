@@ -1,6 +1,4 @@
-from collections.abc import Sequence
-
-from sqlalchemy import select
+from sqlalchemy import Sequence, select
 from sqlalchemy.orm import Session
 
 from app.modules.movies.contracts import AbstractMovieRepository

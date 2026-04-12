@@ -1,49 +1,64 @@
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.core.security import hash_password
 from app.database.infrastructure.session import DbSession
-from app.modules.roles import repository as roles_repo
+from app.modules.roles.contracts import AbstractRoleRepository
 from app.modules.roles.model import Roles
-from app.modules.users import repository as users_repo
+from app.modules.roles.repository import RoleRepository
+from app.modules.users.contracts import AbstractUserRepository
 from app.modules.users.model import User
-from app.modules.users.schemas import UserCreate
+from app.modules.users.repository import UserRepository
+from app.modules.users.schemas import UserCreate, UserList, UserResponse
 
 
-def list_users(db: DbSession, current_user: User) -> list[User]:
-    if current_user.role.name != Roles.STAFF:
-        raise ForbiddenError(detail="Not authorized to perform this action")
+class UserService:
+    def __init__(
+        self,
+        user_repo: AbstractUserRepository,
+        role_repo: AbstractRoleRepository,
+    ) -> None:
+        self.user_repo = user_repo
+        self.role_repo = role_repo
 
-    return users_repo.get_all(db)
+    def list_all_users(self, current_user: User) -> UserList:
+        if current_user.role.name != Roles.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
+        users = self.user_repo.get_all()
+        return UserList(
+            users=[UserResponse.model_validate(user) for user in users],
+            total=len(users),
+        )
+
+    def register_user(self, user_request: UserCreate) -> UserResponse:
+        potential_user = self.user_repo.get_by_email(user_request.email)
+        if potential_user is not None:
+            raise ConflictError(detail="A user with this email already exists")
+
+        db_role = self.role_repo.get_by_name(user_request.role)
+        if db_role is None:
+            raise NotFoundError(detail="Role not found")
+
+        user = User(
+            email=user_request.email,
+            password=hash_password(user_request.password.get_secret_value()),
+            name=user_request.name,
+            last_name=user_request.last_name,
+            is_active=True,
+            role_id=db_role.id,
+        )
+
+        return UserResponse.model_validate(self.user_repo.create(user))
+
+    def get_user_profile(self, current_user: User, user_id: int) -> UserResponse:
+        if current_user.id != user_id and current_user.role.name != Roles.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
+        user = self.user_repo.find_by_id(int(user_id))
+        if not user:
+            raise NotFoundError(detail="User not found")
+
+        return UserResponse.model_validate(user)
 
 
-def create_user(db: DbSession, user_request: UserCreate) -> User:
-    potential_user = users_repo.get_by_email(db, user_request.email)
-    if potential_user is not None:
-        raise ConflictError(detail="A user with this email already exists")
-
-    db_role = roles_repo.get_by_name(db, user_request.role)
-    if db_role is None:
-        raise NotFoundError(detail="Role not found")
-
-    user = User(
-        email=user_request.email,
-        password=hash_password(user_request.password.get_secret_value()),
-        name=user_request.name,
-        last_name=user_request.last_name,
-        is_active=True,
-        role_id=db_role.id,
-    )
-
-    users_repo.create(db, user)
-
-    return user
-
-
-def get_user(db: DbSession, current_user: User, user_id: int) -> User:
-    if current_user.id != user_id and current_user.role.name != Roles.STAFF:
-        raise ForbiddenError(detail="Not authorized to perform this action")
-
-    user = users_repo.get_by_id(db, int(user_id))
-    if not user:
-        raise NotFoundError(detail="User not found")
-
-    return user
+def get_user_service(db: DbSession) -> UserService:
+    return UserService(user_repo=UserRepository(db), role_repo=RoleRepository(db))

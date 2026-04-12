@@ -1,5 +1,6 @@
 from abc import abstractmethod
-from collections.abc import Sequence
+
+from sqlalchemy import Sequence
 
 from app.modules.movies.model import Movie
 from app.modules.movies.schemas import ExternalId

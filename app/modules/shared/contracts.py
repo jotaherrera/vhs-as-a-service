@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
 from typing import TypeVar
+
+from sqlalchemy import Sequence
 
 T = TypeVar("T")
 
