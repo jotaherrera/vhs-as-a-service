@@ -7,7 +7,7 @@ from app.modules.movie.schemas import ExternalId
 from app.modules.shared.contracts import AbstractRepository
 
 
-class AbstractMovieRepository(AbstractRepository):
+class AbstractMovieRepository(AbstractRepository[Movie]):
     @abstractmethod
     def get_by_name(self, name: str) -> Sequence[Movie]: ...
 

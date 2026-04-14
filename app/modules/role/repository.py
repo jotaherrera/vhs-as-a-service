@@ -1,8 +1,19 @@
+from typing import Annotated
+
+from fastapi import Depends
 from sqlalchemy import Select, Sequence
 from sqlalchemy.orm import Session
 
+from app.database.infrastructure.session import DbSession
 from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
+
+
+def get_role_repository(db: DbSession) -> AbstractRoleRepository:
+    return RoleRepository(db)
+
+
+RoleRepo = Annotated[AbstractRoleRepository, Depends(get_role_repository)]
 
 
 class RoleRepository(AbstractRoleRepository):

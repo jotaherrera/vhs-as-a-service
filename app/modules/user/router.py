@@ -29,10 +29,9 @@ async def create_user(
 
 @router.get("/me")
 async def get_own_user(
-    service: Annotated[UserService, Depends(get_user_service)],
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> UserResponse:
-    return service.get_user_profile(current_user, current_user.id)  # ???
+    return UserResponse.model_validate(current_user)
 
 
 @router.get("/{user_id}")
