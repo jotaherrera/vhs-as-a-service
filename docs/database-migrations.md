@@ -46,7 +46,7 @@ Use this when you need a clean slate (e.g. during early development).
 5. Apply it and run seeders:
    ```bash
    uv run alembic upgrade head
-   uv run python -m app.database.seeders.bootstrap
+   uv run python -m app.database.bootstrap.seed
    ```
 
 Or just run `./vhsaas reset`, which handles steps 2–5 automatically on a fresh volume.

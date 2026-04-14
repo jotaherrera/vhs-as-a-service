@@ -1,13 +1,16 @@
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.core.security import hash_password
-from app.database.infrastructure.session import DbSession
 from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import RoleName
-from app.modules.role.repository import RoleRepository
+from app.modules.role.repository import RoleRepo
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
-from app.modules.user.repository import UserRepository
+from app.modules.user.repository import UserRepo
 from app.modules.user.schemas import UserCreate, UserList, UserResponse
+
+
+def get_user_service(user_repo: UserRepo, role_repo: RoleRepo) -> "UserService":
+    return UserService(user_repo=user_repo, role_repo=role_repo)
 
 
 class UserService:
@@ -58,7 +61,3 @@ class UserService:
             raise NotFoundError(detail="User not found")
 
         return UserResponse.model_validate(user)
-
-
-def get_user_service(db: DbSession) -> UserService:
-    return UserService(user_repo=UserRepository(db), role_repo=RoleRepository(db))

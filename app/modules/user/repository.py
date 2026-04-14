@@ -9,6 +9,13 @@ from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
 
 
+def get_user_repository(db: DbSession) -> AbstractUserRepository:
+    return UserRepository(db)
+
+
+UserRepo = Annotated[AbstractUserRepository, Depends(get_user_repository)]
+
+
 class UserRepository(AbstractUserRepository):
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -34,10 +41,3 @@ class UserRepository(AbstractUserRepository):
     def get_by_email(self, email: str) -> User | None:
         stmt = Select(User).where(User.email == email)
         return self.db.scalar(stmt)
-
-
-def get_user_repository(db: DbSession) -> AbstractUserRepository:
-    return UserRepository(db)
-
-
-UserRepo = Annotated[AbstractUserRepository, Depends(get_user_repository)]
