@@ -1,9 +1,8 @@
 import pytest
 
 from app.core.exceptions import ConflictError
-from app.database.infrastructure.session import DbSession
-from app.modules.movie.model import MovieExternalId
-from app.modules.movie.repository import MovieRepository
+from app.modules.movie.contracts import AbstractMovieRepository
+from app.modules.movie.model import Movie, MovieExternalId
 from app.modules.movie.schemas import (
     ExternalId,
     MovieCreate,
@@ -15,24 +14,44 @@ from app.modules.role.model import RoleName
 from tests.fakes.factories.movie import MovieFactory
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
+from tests.fakes.repository import BaseFakeRepository
 
 
-@pytest.fixture
-def service(db_session: DbSession) -> MovieService:
-    return MovieService(movie_repo=MovieRepository(db_session))
+class FakeMovieRepository(BaseFakeRepository[Movie], AbstractMovieRepository):
+    def __init__(self, movies: list[Movie] | None = None) -> None:
+        super().__init__(entities=movies)
+
+    def get_by_name(self, name: str) -> list[Movie]:
+        return [m for m in self._entities.values() if name.lower() in m.title.lower()]
+
+    def find_by_external_id(self, external_id: ExternalId) -> Movie | None:
+        for movie in self._entities.values():
+            for ext in movie.external_ids:
+                if (
+                    ext.provider == external_id.provider
+                    and ext.external_id == external_id.external_id
+                ):
+                    return movie
+        return None
 
 
-def test_list_movies_for_customer_returns_only_active(service: MovieService) -> None:
-    MovieFactory.create(is_active=True)
-    MovieFactory.create(is_active=False)
-
+def test_list_movies_for_customer_returns_only_active() -> None:
+    service = MovieService(
+        movie_repo=FakeMovieRepository(
+            movies=[
+                MovieFactory.build(is_active=True),
+                MovieFactory.build(is_active=False),
+            ],
+        ),
+    )
     result = service.list_movies_for_customer()
 
     assert len(result) == 1
 
 
-def test_list_movies_for_customer_returns_public_schema(service: MovieService) -> None:
-    movie = MovieFactory.create(is_active=True)
+def test_list_movies_for_customer_returns_public_schema() -> None:
+    movie = MovieFactory.build(is_active=True)
+    service = MovieService(movie_repo=FakeMovieRepository(movies=[movie]))
 
     result = service.list_movies_for_customer()
 
@@ -49,8 +68,12 @@ def test_list_movies_for_customer_returns_public_schema(service: MovieService) -
     assert item.release_date == movie.release_date
 
 
-def test_list_movies_for_customer_does_not_expose_private_fields(service: MovieService) -> None:
-    MovieFactory.create(is_active=True)
+def test_list_movies_for_customer_does_not_expose_private_fields() -> None:
+    service = MovieService(
+        movie_repo=FakeMovieRepository(
+            movies=[MovieFactory.build(is_active=True)],
+        ),
+    )
 
     result = service.list_movies_for_customer()
 
@@ -61,25 +84,36 @@ def test_list_movies_for_customer_does_not_expose_private_fields(service: MovieS
     assert not hasattr(item, "created_at")
 
 
-def test_list_movies_for_customer_returns_empty_when_none_active(service: MovieService) -> None:
-    MovieFactory.create(is_active=False)
+def test_list_movies_for_customer_returns_empty_when_none_active() -> None:
+    service = MovieService(
+        movie_repo=FakeMovieRepository(
+            movies=[MovieFactory.build(is_active=False)],
+        ),
+    )
 
     result = service.list_movies_for_customer()
 
     assert result == []
 
 
-def test_list_movies_for_staff_returns_all_movies(service: MovieService) -> None:
-    MovieFactory.create(is_active=True)
-    MovieFactory.create(is_active=False)
+def test_list_movies_for_staff_returns_all_movies() -> None:
+    service = MovieService(
+        movie_repo=FakeMovieRepository(
+            movies=[
+                MovieFactory.build(is_active=True),
+                MovieFactory.build(is_active=False),
+            ],
+        ),
+    )
 
     result = service.list_movies_for_staff()
 
     assert len(result) == 2
 
 
-def test_list_movies_for_staff_returns_private_schema(service: MovieService) -> None:
-    movie = MovieFactory.create(is_active=True)
+def test_list_movies_for_staff_returns_private_schema() -> None:
+    movie = MovieFactory.build(is_active=True)
+    service = MovieService(movie_repo=FakeMovieRepository(movies=[movie]))
 
     result = service.list_movies_for_staff()
 
@@ -94,10 +128,16 @@ def test_list_movies_for_staff_returns_private_schema(service: MovieService) -> 
     assert item.created_at == movie.created_at
 
 
-def test_list_movies_routes_customer_to_public_listing(service: MovieService) -> None:
-    MovieFactory.create(is_active=True)
-    MovieFactory.create(is_active=False)
-    customer = UserFactory.create(role=RoleFactory.create(name=RoleName.CUSTOMER))
+def test_list_movies_routes_customer_to_public_listing() -> None:
+    customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    service = MovieService(
+        movie_repo=FakeMovieRepository(
+            movies=[
+                MovieFactory.build(is_active=True),
+                MovieFactory.build(is_active=False),
+            ],
+        ),
+    )
 
     result = service.list_movies(customer)
 
@@ -105,10 +145,16 @@ def test_list_movies_routes_customer_to_public_listing(service: MovieService) ->
     assert isinstance(result[0], MovieResponsePublic)
 
 
-def test_list_movies_routes_staff_to_private_listing(service: MovieService) -> None:
-    MovieFactory.create(is_active=True)
-    MovieFactory.create(is_active=False)
-    staff = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
+def test_list_movies_routes_staff_to_private_listing() -> None:
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    service = MovieService(
+        movie_repo=FakeMovieRepository(
+            movies=[
+                MovieFactory.build(is_active=True),
+                MovieFactory.build(is_active=False),
+            ],
+        ),
+    )
 
     result = service.list_movies(staff)
 
@@ -116,7 +162,8 @@ def test_list_movies_routes_staff_to_private_listing(service: MovieService) -> N
     assert isinstance(result[0], MovieResponsePrivate)
 
 
-def test_create_movie_persists_correctly(service: MovieService) -> None:
+def test_create_movie_persists_correctly() -> None:
+    service = MovieService(movie_repo=FakeMovieRepository())
     request = MovieCreate(
         title="The Matrix",
         description="A hacker discovers the truth about reality.",
@@ -139,8 +186,11 @@ def test_create_movie_persists_correctly(service: MovieService) -> None:
     assert movie.external_ids[0].external_id == "tt0133093"
 
 
-def test_create_movie_raises_conflict_when_external_id_exists(service: MovieService) -> None:
-    MovieFactory.create(external_ids=[MovieExternalId(provider="imdb", external_id="tt0133093")])
+def test_create_movie_raises_conflict_when_external_id_exists() -> None:
+    existing = MovieFactory.build(
+        external_ids=[MovieExternalId(provider="imdb", external_id="tt0133093")],
+    )
+    service = MovieService(movie_repo=FakeMovieRepository(movies=[existing]))
     request = MovieCreate(
         title="The Matrix Reloaded",
         description="The sequel.",
@@ -158,8 +208,11 @@ def test_create_movie_raises_conflict_when_external_id_exists(service: MovieServ
         service.create_movie(request)
 
 
-def test_create_movie_conflict_error_includes_provider_and_id(service: MovieService) -> None:
-    MovieFactory.create(external_ids=[MovieExternalId(provider="imdb", external_id="tt0133093")])
+def test_create_movie_conflict_error_includes_provider_and_id() -> None:
+    existing = MovieFactory.build(
+        external_ids=[MovieExternalId(provider="imdb", external_id="tt0133093")],
+    )
+    service = MovieService(movie_repo=FakeMovieRepository(movies=[existing]))
     request = MovieCreate(
         title="The Matrix Reloaded",
         description="The sequel.",
@@ -180,8 +233,11 @@ def test_create_movie_conflict_error_includes_provider_and_id(service: MovieServ
     assert "tt0133093" in exc_info.value.detail
 
 
-def test_create_movie_raises_conflict_on_any_matching_external_id(service: MovieService) -> None:
-    MovieFactory.create(external_ids=[MovieExternalId(provider="tmdb", external_id="438631")])
+def test_create_movie_raises_conflict_on_any_matching_external_id() -> None:
+    existing = MovieFactory.build(
+        external_ids=[MovieExternalId(provider="tmdb", external_id="438631")],
+    )
+    service = MovieService(movie_repo=FakeMovieRepository(movies=[existing]))
     request = MovieCreate(
         title="Dune",
         description="Epic sci-fi.",
