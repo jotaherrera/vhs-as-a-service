@@ -1,4 +1,4 @@
-from tests.factories.role import RoleFactory
+from tests.fakes.factories.role import RoleFactory
 
 
 def test_role_string_repr() -> None:

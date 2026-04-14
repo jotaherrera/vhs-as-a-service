@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.modules.role.model import Role, RoleName
 from app.modules.role.repository import RoleRepository
-from tests.factories.role import RoleFactory
+from tests.fakes.factories.role import RoleFactory
 
 
 @pytest.fixture

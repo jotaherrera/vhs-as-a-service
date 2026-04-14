@@ -2,7 +2,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from app.modules.auth.schemas import TokenResponse
-from tests.factories.user import UserFactory
+from tests.fakes.factories.user import UserFactory
 
 
 def test_get_access_token(db_client: TestClient) -> None:

@@ -3,7 +3,7 @@ from factory.alchemy import SQLAlchemyModelFactory
 
 from app.core.security import hash_password
 from app.modules.user.model import User
-from tests.factories.role import RoleFactory
+from tests.fakes.factories.role import RoleFactory
 
 
 class UserFactory(SQLAlchemyModelFactory):

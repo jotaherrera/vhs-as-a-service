@@ -11,9 +11,9 @@ from testcontainers.postgres import PostgresContainer
 
 from app.database.infrastructure.session import get_db
 from app.main import app
-from tests.factories.movie import MovieFactory
-from tests.factories.role import RoleFactory
-from tests.factories.user import UserFactory
+from tests.fakes.factories.movie import MovieFactory
+from tests.fakes.factories.role import RoleFactory
+from tests.fakes.factories.user import UserFactory
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 ALEMBIC_INI_PATH = BASE_DIR / "alembic.ini"

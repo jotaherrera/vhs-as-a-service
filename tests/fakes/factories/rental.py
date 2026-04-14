@@ -4,8 +4,8 @@ from factory import LazyFunction, SubFactory
 from factory.alchemy import SQLAlchemyModelFactory
 
 from app.modules.rental.model import Rental, RentalStatus
-from tests.factories.movie import MovieFactory
-from tests.factories.user import UserFactory
+from tests.fakes.factories.movie import MovieFactory
+from tests.fakes.factories.user import UserFactory
 
 
 class RentalFactory(SQLAlchemyModelFactory):
