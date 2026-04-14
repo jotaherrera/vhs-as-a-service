@@ -1,4 +1,4 @@
-from tests.factories.movie import MovieFactory
+from tests.fakes.factories.movie import MovieFactory
 
 
 def test_movie_string_repr() -> None:

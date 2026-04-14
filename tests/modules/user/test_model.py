@@ -1,4 +1,4 @@
-from tests.factories.user import UserFactory
+from tests.fakes.factories.user import UserFactory
 
 
 def test_user_string_repr() -> None:

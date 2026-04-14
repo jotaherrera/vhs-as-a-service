@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.modules.movie.model import Movie, MovieExternalId
 from app.modules.movie.repository import MovieRepository
 from app.modules.movie.schemas import ExternalId
-from tests.factories.movie import MovieFactory
+from tests.fakes.factories.movie import MovieFactory
 
 
 @pytest.fixture

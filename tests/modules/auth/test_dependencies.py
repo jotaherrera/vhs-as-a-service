@@ -11,7 +11,7 @@ from app.modules.auth.dependencies import (
 )
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.repository import UserRepository
-from tests.factories.user import UserFactory
+from tests.fakes.factories.user import UserFactory
 
 
 @pytest.fixture

@@ -12,9 +12,9 @@ from app.modules.movie.schemas import (
 )
 from app.modules.movie.service import MovieService
 from app.modules.role.model import RoleName
-from tests.factories.movie import MovieFactory
-from tests.factories.role import RoleFactory
-from tests.factories.user import UserFactory
+from tests.fakes.factories.movie import MovieFactory
+from tests.fakes.factories.role import RoleFactory
+from tests.fakes.factories.user import UserFactory
 
 
 @pytest.fixture

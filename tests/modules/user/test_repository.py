@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.modules.user.model import User
 from app.modules.user.repository import UserRepository
-from tests.factories.user import UserFactory
+from tests.fakes.factories.user import UserFactory
 
 
 @pytest.fixture

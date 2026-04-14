@@ -1,6 +1,6 @@
 import pytest
 
-from tests.factories.rental import RentalFactory
+from tests.fakes.factories.rental import RentalFactory
 
 
 def test_rental_string_repr() -> None:

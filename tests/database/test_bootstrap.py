@@ -4,7 +4,7 @@ from app.core.security import verify_password
 from app.database.bootstrap.seed import STAFF_USER, seed_roles, seed_staff
 from app.modules.role.model import Role, RoleName
 from app.modules.user.model import User
-from tests.factories.role import RoleFactory
+from tests.fakes.factories.role import RoleFactory
 
 
 def test_seed_roles(db_session: Session) -> None:
