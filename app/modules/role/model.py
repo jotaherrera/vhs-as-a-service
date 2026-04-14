@@ -19,7 +19,7 @@ class Role(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    name: Mapped[str] = mapped_column(
+    name: Mapped[RoleName] = mapped_column(
         Enum(RoleName, name="role_name", schema="app"),
         unique=True,
         nullable=False,
