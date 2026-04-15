@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.core.fields import PasswordStr
 from app.modules.role.model import RoleName
+from app.modules.role.schemas import RoleResponse
 
 
 class UserCreate(BaseModel):
@@ -28,7 +29,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     name: str
     last_name: str
-    role_id: int
+    role: RoleResponse
     is_active: bool
     created_at: datetime
     modified_at: datetime

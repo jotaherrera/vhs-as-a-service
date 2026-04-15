@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 
 from app.core.security import create_access_token
 from app.modules.role.model import RoleName
+from app.modules.role.schemas import RoleResponse
 from app.modules.user.schemas import UserList, UserResponse
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
@@ -59,7 +60,7 @@ def test_create_user(db_client: TestClient) -> None:
     assert user.created_at is not None
     assert user.modified_at is not None
     assert user.is_active
-    assert user.role_id == role.id
+    assert user.role == RoleResponse.model_validate(role)
 
 
 def test_create_user_email_already_exists(db_client: TestClient) -> None:
@@ -110,7 +111,7 @@ def test_get_own_user(db_client: TestClient) -> None:
     assert user_response.name == user.name
     assert user_response.last_name == user.last_name
     assert user_response.is_active == user.is_active
-    assert user_response.role_id == user.role_id
+    assert user_response.role == RoleResponse.model_validate(user.role)
 
     assert user_response.created_at is not None
     assert user_response.modified_at is not None
@@ -136,7 +137,7 @@ def test_get_user_by_id_normal_user(db_client: TestClient) -> None:
     assert user_response.name == user.name
     assert user_response.last_name == user.last_name
     assert user_response.is_active == user.is_active
-    assert user_response.role_id == user.role_id
+    assert user_response.role == RoleResponse.model_validate(user.role)
 
     assert user_response.created_at is not None
     assert user_response.modified_at is not None
@@ -165,7 +166,7 @@ def test_get_user_by_id_admin_user(db_client: TestClient) -> None:
     assert user_response.name == user.name
     assert user_response.last_name == user.last_name
     assert user_response.is_active == user.is_active
-    assert user_response.role_id == user.role_id
+    assert user_response.role == RoleResponse.model_validate(user.role)
 
     assert user_response.created_at is not None
     assert user_response.modified_at is not None

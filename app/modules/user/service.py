@@ -48,6 +48,7 @@ class UserService:
             last_name=user_request.last_name,
             is_active=True,
             role_id=db_role.id,
+            role=db_role,
         )
 
         return UserResponse.model_validate(self.user_repo.create(user))
