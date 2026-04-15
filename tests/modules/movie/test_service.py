@@ -22,10 +22,10 @@ class FakeMovieRepository(BaseFakeRepository[Movie], AbstractMovieRepository):
         super().__init__(entities=movies)
 
     def get_by_name(self, name: str) -> list[Movie]:
-        return [m for m in self._entities.values() if name.lower() in m.title.lower()]
+        return [m for m in self.entities.values() if name.lower() in m.title.lower()]
 
     def find_by_external_id(self, external_id: ExternalId) -> Movie | None:
-        for movie in self._entities.values():
+        for movie in self.entities.values():
             for ext in movie.external_ids:
                 if (
                     ext.provider == external_id.provider

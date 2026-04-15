@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.modules.role.model import RoleName
 
@@ -11,6 +11,8 @@ class RoleCreate(BaseModel):
 
 
 class RoleResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: RoleName
     created_at: datetime
