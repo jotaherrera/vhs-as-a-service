@@ -140,3 +140,24 @@ def test_find_by_external_id_does_not_match_different_provider(
     result = movie_repo.find_by_external_id(query)
 
     assert result is None
+
+
+def test_update_persists_changes(movie_repo: MovieRepository, db_session: Session) -> None:
+    movie = movie_repo.create(MovieFactory.build(title="Old Title"))
+
+    movie.title = "New Title"
+    movie_repo.update(movie)
+
+    db_movie = db_session.get(Movie, movie.id)
+    assert db_movie is not None
+    assert db_movie.title == "New Title"
+
+
+def test_delete_soft_deletes_movie(movie_repo: MovieRepository, db_session: Session) -> None:
+    movie = movie_repo.create(MovieFactory.build(is_active=True))
+
+    movie_repo.delete(movie)
+
+    db_movie = db_session.get(Movie, movie.id)
+    assert db_movie is not None
+    assert db_movie.is_active is False

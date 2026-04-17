@@ -28,6 +28,15 @@ class MovieRepository(AbstractMovieRepository):
         self.db.refresh(entity)
         return entity
 
+    def update(self, entity: Movie) -> Movie:
+        self.db.commit()
+        self.db.refresh(entity)
+        return entity
+
+    def delete(self, entity: Movie) -> None:
+        entity.is_active = False
+        self.db.commit()
+
     def get_by_name(self, name: str) -> Sequence[Movie]:
         stmt = select(Movie).where(Movie.title.ilike(f"%{name}%"))
         return self.db.scalars(stmt).all()

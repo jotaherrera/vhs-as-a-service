@@ -47,3 +47,11 @@ class BaseFakeRepository[T: Persistable]:
     def create(self, entity: T) -> T:
         self._persist(entity)
         return entity
+
+    def update(self, entity: T) -> T:
+        self._touch(entity)
+        self.entities[entity.id] = entity
+        return entity
+
+    def delete(self, entity: T) -> None:
+        entity.is_active = False
