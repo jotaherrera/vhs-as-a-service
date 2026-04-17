@@ -48,8 +48,12 @@ class User(Base):
 
     def __repr__(self) -> str:
         return (
-            f"User(id={self.id}, email={self.email!r}, "
-            f"name={self.name!r}, last_name={self.last_name!r}, "
-            f"created_at={self.created_at}, modified_at={self.modified_at}, "
-            f"is_active={self.is_active}, role={str(self.role.name)!r})"
+            f"<User(id={self.id}, "
+            f"email={self.email!r}, "
+            f"name={self.name!r}, "
+            f"last_name={self.last_name!r}, "
+            f"created_at={self.created_at}, "
+            f"modified_at={self.modified_at}, "
+            f"is_active={self.is_active}, "
+            f"role={str(self.role.name)!r})>"
         )

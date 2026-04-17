@@ -1,8 +1,8 @@
 """initial schema.
 
-Revision ID: 2abdd27f693c
+Revision ID: 14231d6c73e0
 Revises:
-Create Date: 2026-04-14 21:06:47.825850
+Create Date: 2026-04-16 19:31:53.598978
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "2abdd27f693c"
+revision: str = "14231d6c73e0"
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -118,7 +118,11 @@ def upgrade() -> None:
     op.create_table(
         "rentals",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("status", sa.String(length=50), nullable=False),
+        sa.Column(
+            "status",
+            sa.Enum("ACTIVE", "COMPLETED", "LATE", "DAMAGED", name="rental_status", schema="app"),
+            nullable=False,
+        ),
         sa.Column("expected_return_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("returned_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("movie_id", sa.Integer(), nullable=False),
