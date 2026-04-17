@@ -38,6 +38,15 @@ class RoleRepository(AbstractRoleRepository):
         self.db.refresh(entity)
         return entity
 
+    def update(self, entity: Role) -> Role:
+        self.db.commit()
+        self.db.refresh(entity)
+        return entity
+
+    def delete(self, entity: Role) -> None:
+        entity.is_active = False
+        self.db.commit()
+
     def get_by_name(self, name: RoleName) -> Role | None:
         stmt = Select(Role).where(Role.name == name)
         return self.db.scalar(stmt)

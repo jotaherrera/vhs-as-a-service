@@ -86,3 +86,24 @@ def test_create_persists_role_and_returns_it(
 
     assert result.id is not None
     assert db_session.get(Role, result.id) is not None
+
+
+def test_update_persists_changes(role_repo: RoleRepository, db_session: Session) -> None:
+    role = role_repo.create(RoleFactory.build(name=RoleName.STAFF, is_active=False))
+
+    role.is_active = True
+    role_repo.update(role)
+
+    db_role = db_session.get(Role, role.id)
+    assert db_role is not None
+    assert db_role.is_active is True
+
+
+def test_delete_soft_deletes_role(role_repo: RoleRepository, db_session: Session) -> None:
+    role = role_repo.create(RoleFactory.build(name=RoleName.CUSTOMER, is_active=True))
+
+    role_repo.delete(role)
+
+    db_role = db_session.get(Role, role.id)
+    assert db_role is not None
+    assert db_role.is_active is False

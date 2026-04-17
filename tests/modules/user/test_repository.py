@@ -86,3 +86,24 @@ def test_create_persists_user_and_returns_it(
 
     assert result.id is not None
     assert db_session.get(User, result.id) is not None
+
+
+def test_update_persists_changes(user_repo: UserRepository, db_session: Session) -> None:
+    user = user_repo.create(UserFactory.build(is_active=False))
+
+    user.is_active = True
+    user_repo.update(user)
+
+    db_user = db_session.get(User, user.id)
+    assert db_user is not None
+    assert db_user.is_active is True
+
+
+def test_delete_soft_deletes_user(user_repo: UserRepository, db_session: Session) -> None:
+    user = user_repo.create(UserFactory.build(is_active=True))
+
+    user_repo.delete(user)
+
+    db_user = db_session.get(User, user.id)
+    assert db_user is not None
+    assert db_user.is_active is False
