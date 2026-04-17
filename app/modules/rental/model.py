@@ -2,10 +2,10 @@ from datetime import datetime
 from enum import StrEnum
 from typing import ClassVar
 
-from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy import DateTime, Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.sql import func
-from sqlalchemy.sql.sqltypes import Integer, String
+from sqlalchemy.sql.sqltypes import Integer
 
 from app.database.infrastructure.base import Base
 
@@ -22,7 +22,10 @@ class Rental(Base):
     __table_args__: ClassVar[dict[str, str]] = {"schema": "app"}
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    status: Mapped[str] = mapped_column(String(50), nullable=False)
+    status: Mapped[RentalStatus] = mapped_column(
+        Enum(RentalStatus, name="rental_status", schema="app"),
+        nullable=False,
+    )
 
     expected_return_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     returned_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -64,8 +67,11 @@ class Rental(Base):
 
     def __repr__(self) -> str:
         return (
-            f"Rental(id={self.id!r}, status={self.status!r}, "
-            f"movie_id={self.movie_id!r}, customer_id={self.customer_id!r}, "
-            f"staff_id={self.staff_id!r}, expected_return_at={self.expected_return_at!r}, "
-            f"returned_at={self.returned_at!r})"
+            f"<Rental(id={self.id!r}, "
+            f"status={self.status!r}, "
+            f"movie_id={self.movie_id!r}, "
+            f"customer_id={self.customer_id!r}, "
+            f"staff_id={self.staff_id!r}, "
+            f"expected_return_at={self.expected_return_at!r}, "
+            f"returned_at={self.returned_at!r})>"
         )
