@@ -2,35 +2,13 @@ import pytest
 from pydantic import SecretStr
 
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
-from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
-from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
 from app.modules.user.schemas import UserCreate, UserResponse
 from app.modules.user.service import UserService
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
-from tests.fakes.repository import BaseFakeRepository
-
-
-class FakeUserRepository(BaseFakeRepository[User], AbstractUserRepository):
-    def __init__(self, users: list[User] | None = None) -> None:
-        super().__init__(entities=users)
-
-    def _persist(self, entity: User) -> None:
-        self._touch(entity.role)
-        super()._persist(entity)
-
-    def get_by_email(self, email: str) -> User | None:
-        return next((u for u in self.entities.values() if u.email == email), None)
-
-
-class FakeRoleRepository(BaseFakeRepository[Role], AbstractRoleRepository):
-    def __init__(self, roles: list[Role] | None = None) -> None:
-        super().__init__(entities=roles)
-
-    def get_by_name(self, name: RoleName) -> Role | None:
-        return next((r for r in self.entities.values() if r.name == name), None)
+from tests.fakes.repository import FakeRoleRepository, FakeUserRepository
 
 
 def make_service(

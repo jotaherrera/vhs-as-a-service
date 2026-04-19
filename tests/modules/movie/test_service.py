@@ -1,8 +1,7 @@
 import pytest
 
 from app.core.exceptions import ConflictError
-from app.modules.movie.contracts import AbstractMovieRepository
-from app.modules.movie.model import Movie, MovieExternalId
+from app.modules.movie.model import MovieExternalId
 from app.modules.movie.schemas import (
     ExternalId,
     MovieCreate,
@@ -14,25 +13,7 @@ from app.modules.role.model import RoleName
 from tests.fakes.factories.movie import MovieFactory
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
-from tests.fakes.repository import BaseFakeRepository
-
-
-class FakeMovieRepository(BaseFakeRepository[Movie], AbstractMovieRepository):
-    def __init__(self, movies: list[Movie] | None = None) -> None:
-        super().__init__(entities=movies)
-
-    def get_by_name(self, name: str) -> list[Movie]:
-        return [m for m in self.entities.values() if name.lower() in m.title.lower()]
-
-    def find_by_external_id(self, external_id: ExternalId) -> Movie | None:
-        for movie in self.entities.values():
-            for ext in movie.external_ids:
-                if (
-                    ext.provider == external_id.provider
-                    and ext.external_id == external_id.external_id
-                ):
-                    return movie
-        return None
+from tests.fakes.repository import FakeMovieRepository
 
 
 def test_list_movies_for_customer_returns_only_active() -> None:

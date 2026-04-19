@@ -1,8 +1,10 @@
 import pytest
 from sqlalchemy.orm import Session
 
+from app.modules.role.model import RoleName
 from app.modules.user.model import User
 from app.modules.user.repository import UserRepository
+from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
 
 
@@ -80,9 +82,9 @@ def test_create_persists_user_and_returns_it(
     user_repo: UserRepository,
     db_session: Session,
 ) -> None:
-    user = UserFactory.build()
+    role = RoleFactory.create(name=RoleName.CUSTOMER)
 
-    result = user_repo.create(user)
+    result = user_repo.create(UserFactory.build(role=role))
 
     assert result.id is not None
     assert db_session.get(User, result.id) is not None

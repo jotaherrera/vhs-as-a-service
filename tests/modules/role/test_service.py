@@ -1,15 +1,9 @@
 import pytest
 
 from app.core.exceptions import ConflictError
-from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
 from app.modules.role.service import RoleService
-from tests.fakes.repository import BaseFakeRepository
-
-
-class FakeRoleRepository(BaseFakeRepository[Role], AbstractRoleRepository):
-    def __init__(self, roles: list[Role] | None = None) -> None:
-        super().__init__(entities=roles)
+from tests.fakes.repository import FakeRoleRepository
 
 
 def test_create_role_persists_correctly() -> None:
