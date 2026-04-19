@@ -13,12 +13,9 @@ class RentalFactory(SQLAlchemyModelFactory):
         model = Rental
         sqlalchemy_session_persistence = "flush"
 
-    status = RentalStatus.ACTIVE
-    expected_return_at = LazyFunction(
-        lambda: datetime.now(tz=UTC) + timedelta(days=7),
-    )
-    returned_at = None
-
-    movie = SubFactory(MovieFactory)
     customer = SubFactory(UserFactory)
     staff = SubFactory(UserFactory)
+    movie = SubFactory(MovieFactory)
+    status = RentalStatus.ACTIVE
+    expected_return_at = LazyFunction(lambda: datetime.now(UTC) + timedelta(days=7))
+    returned_at = None
