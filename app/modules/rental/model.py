@@ -3,7 +3,7 @@ from enum import StrEnum
 from typing import ClassVar
 
 from sqlalchemy import DateTime, Enum, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import Integer
 
@@ -14,7 +14,6 @@ class RentalStatus(StrEnum):
     ACTIVE = "ACTIVE"
     COMPLETED = "COMPLETED"
     LATE = "LATE"
-    DAMAGED = "DAMAGED"
 
 
 class Rental(Base):
@@ -57,13 +56,6 @@ class Rental(Base):
         back_populates="staff_rentals",
     )
     movie = relationship("Movie", back_populates="rentals")
-
-    @validates("status")
-    def validate_status(self, _key: str, value: str) -> str:
-        if value not in RentalStatus:
-            msg = f"Invalid status: {value}. Must be one of {list(RentalStatus)}"
-            raise ValueError(msg)
-        return value
 
     def __repr__(self) -> str:
         return (
