@@ -13,7 +13,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 
 def authenticate_user(user_repo: UserRepo, email: str, password: SecretStr) -> User | None:
-    db_user = user_repo.get_by_email(email)
+    db_user = user_repo.find_by_email(email)
     if db_user is None:
         return None
 

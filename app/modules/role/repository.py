@@ -47,6 +47,6 @@ class RoleRepository(AbstractRoleRepository):
         entity.is_active = False
         self.db.commit()
 
-    def get_by_name(self, name: RoleName) -> Role | None:
+    def find_by_name(self, name: RoleName) -> Role | None:
         stmt = Select(Role).where(Role.name == name)
         return self.db.scalar(stmt)
