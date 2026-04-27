@@ -47,6 +47,6 @@ class UserRepository(AbstractUserRepository):
         entity.is_active = False
         self.db.commit()
 
-    def get_by_email(self, email: str) -> User | None:
+    def find_by_email(self, email: str) -> User | None:
         stmt = Select(User).where(User.email == email)
         return self.db.scalar(stmt)

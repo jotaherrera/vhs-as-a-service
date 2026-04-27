@@ -27,18 +27,18 @@ def test_find_by_id_returns_none_when_not_found(role_repo: RoleRepository) -> No
     assert result is None
 
 
-def test_get_by_name_returns_role_when_exists(role_repo: RoleRepository) -> None:
+def test_find_by_name_returns_role_when_exists(role_repo: RoleRepository) -> None:
     role = RoleFactory.create(name=RoleName.CUSTOMER)
 
-    result = role_repo.get_by_name(RoleName.CUSTOMER)
+    result = role_repo.find_by_name(RoleName.CUSTOMER)
 
     assert result is not None
     assert result.id == role.id
     assert result.name == role.name
 
 
-def test_get_by_name_returns_none_when_not_found(role_repo: RoleRepository) -> None:
-    result = role_repo.get_by_name(RoleName.STAFF)
+def test_find_by_name_returns_none_when_not_found(role_repo: RoleRepository) -> None:
+    result = role_repo.find_by_name(RoleName.STAFF)
 
     assert result is None
 

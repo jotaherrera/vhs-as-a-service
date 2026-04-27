@@ -79,7 +79,7 @@ class FakeUserRepository(BaseFakeRepository[User], AbstractUserRepository):
     def delete(self, entity: User) -> None:
         entity.is_active = False
 
-    def get_by_email(self, email: str) -> User | None:
+    def find_by_email(self, email: str) -> User | None:
         return next((u for u in self.entities.values() if u.email == email), None)
 
 
@@ -96,7 +96,7 @@ class FakeRoleRepository(BaseFakeRepository[Role], AbstractRoleRepository):
     def delete(self, entity: Role) -> None:
         entity.is_active = False
 
-    def get_by_name(self, name: RoleName) -> Role | None:
+    def find_by_name(self, name: RoleName) -> Role | None:
         return next((r for r in self.entities.values() if r.name == name), None)
 
 

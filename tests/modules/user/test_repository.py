@@ -29,18 +29,18 @@ def test_find_by_id_returns_none_when_not_found(user_repo: UserRepository) -> No
     assert result is None
 
 
-def test_get_by_email_returns_user_when_exists(user_repo: UserRepository) -> None:
+def test_find_by_email_returns_user_when_exists(user_repo: UserRepository) -> None:
     user = UserFactory.create()
 
-    result = user_repo.get_by_email(user.email)
+    result = user_repo.find_by_email(user.email)
 
     assert result is not None
     assert result.id == user.id
     assert result.email == user.email
 
 
-def test_get_by_email_returns_none_when_not_found(user_repo: UserRepository) -> None:
-    result = user_repo.get_by_email("nonexistent@mail.com")
+def test_find_by_email_returns_none_when_not_found(user_repo: UserRepository) -> None:
+    result = user_repo.find_by_email("nonexistent@mail.com")
 
     assert result is None
 

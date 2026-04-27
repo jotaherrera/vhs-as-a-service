@@ -33,11 +33,11 @@ class UserService:
         )
 
     def register_user(self, user_request: UserCreate) -> UserResponse:
-        potential_user = self.user_repo.get_by_email(user_request.email)
+        potential_user = self.user_repo.find_by_email(user_request.email)
         if potential_user is not None:
             raise ConflictError(detail="A user with this email already exists")
 
-        db_role = self.role_repo.get_by_name(user_request.role)
+        db_role = self.role_repo.find_by_name(user_request.role)
         if db_role is None:
             raise NotFoundError(detail="Role not found")
 
