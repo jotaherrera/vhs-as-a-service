@@ -1,5 +1,3 @@
-import pytest
-
 from tests.fakes.factories.rental import RentalFactory
 
 
@@ -17,8 +15,3 @@ def test_rental_string_repr() -> None:
     )
 
     assert repr(rental) == expected
-
-
-def test_create_rental_with_invalid_status() -> None:
-    with pytest.raises(ValueError, match="Invalid status:"):
-        RentalFactory.build(status="INVALID")

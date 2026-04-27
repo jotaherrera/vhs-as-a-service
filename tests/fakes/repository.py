@@ -59,6 +59,9 @@ class FakeUserRepository(BaseFakeRepository[User], AbstractUserRepository):
 
     def _persist(self, entity: User) -> None:
         self._touch(entity.role)
+
+        entity.role_id = entity.role.id
+
         super()._persist(entity)
 
     def update(self, entity: User) -> User:
@@ -127,6 +130,19 @@ class FakeMovieRepository(BaseFakeRepository[Movie], AbstractMovieRepository):
 class FakeRentalRepository(BaseFakeRepository[Rental], AbstractRentalRepository):
     def __init__(self, rentals: list[Rental] | None = None) -> None:
         super().__init__(entities=rentals)
+
+    def _persist(self, entity: Rental) -> None:
+        self._touch(entity.customer)
+        self._touch(entity.customer.role)
+        self._touch(entity.staff)
+        self._touch(entity.staff.role)
+        self._touch(entity.movie)
+
+        entity.customer_id = entity.customer.id
+        entity.staff_id = entity.staff.id
+        entity.movie_id = entity.movie.id
+
+        super()._persist(entity)
 
     def get_all(self, *, status: RentalStatus | None = None) -> Sequence[Rental]:
         entities = list(self.entities.values())
