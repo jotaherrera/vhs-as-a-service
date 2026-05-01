@@ -1,6 +1,6 @@
 from app.core.exceptions import ConflictError
 from app.modules.role.contracts import AbstractRoleRepository
-from app.modules.role.model import Role, RoleName
+from app.modules.role.model import Role
 
 
 class RoleService:
@@ -8,10 +8,9 @@ class RoleService:
         self.role_repo = role_repo
 
     def create_role(self, role: Role) -> Role:
-        if role.name not in RoleName:
-            raise ConflictError(
-                detail=f"Invalid role: {role.name}. Must be one of {list(RoleName)}",
-            )
+        potential_role = self.role_repo.find_by_name(role.name)
+        if potential_role is not None:
+            raise ConflictError(detail=f"Role with name {role.name} already exists.")
 
         self.role_repo.create(role)
         return role
