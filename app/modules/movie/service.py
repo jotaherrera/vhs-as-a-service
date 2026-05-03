@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from app.core.exceptions import ConflictError, NotFoundError
-from app.modules.auth.dependencies import CurrentUserDep
+from app.modules.auth.dependencies import CurrentActiveUserDep
 from app.modules.movie.contracts import AbstractMovieRepository
 from app.modules.movie.model import Movie, MovieExternalId
 from app.modules.movie.repository import MovieRepo
@@ -46,7 +46,7 @@ class MovieService:
 
     def get_by_id(
         self,
-        current_user: CurrentUserDep,
+        current_user: CurrentActiveUserDep,
         entity_id: int,
     ) -> MovieResponsePublic | MovieResponsePrivate:
         movie = self.movie_repo.find_by_id(entity_id)

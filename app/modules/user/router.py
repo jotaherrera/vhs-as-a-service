@@ -1,43 +1,31 @@
-from typing import Annotated
-
 from fastapi import APIRouter, status
-from fastapi.params import Depends
 
-from app.modules.auth.dependencies import get_current_active_user
-from app.modules.user.model import User
+from app.modules.auth.dependencies import CurrentActiveUserDep
 from app.modules.user.schemas import UserCreate, UserList, UserResponse
-from app.modules.user.service import UserService, get_user_service
+from app.modules.user.service import UserServiceDep
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/")
-async def list_users(
-    service: Annotated[UserService, Depends(get_user_service)],
-    current_user: Annotated[User, Depends(get_current_active_user)],
-) -> UserList:
+async def list_users(service: UserServiceDep, current_user: CurrentActiveUserDep) -> UserList:
     return service.list_all_users(current_user)
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(
-    service: Annotated[UserService, Depends(get_user_service)],
-    user_request: UserCreate,
-) -> UserResponse:
-    return service.register_user(user_request)
-
-
 @router.get("/me")
-async def get_own_user(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-) -> UserResponse:
+async def get_own_user(current_user: CurrentActiveUserDep) -> UserResponse:
     return UserResponse.model_validate(current_user)
 
 
 @router.get("/{user_id}")
 async def get_user(
-    service: Annotated[UserService, Depends(get_user_service)],
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    service: UserServiceDep,
+    current_user: CurrentActiveUserDep,
     user_id: int,
 ) -> UserResponse:
     return service.get_user_profile(current_user, user_id)
+
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create_user(service: UserServiceDep, request: UserCreate) -> UserResponse:
+    return service.register_user(request)
