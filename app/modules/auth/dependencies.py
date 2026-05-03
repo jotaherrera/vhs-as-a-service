@@ -45,4 +45,4 @@ def get_current_active_user(current_user: Annotated[User, Depends(get_current_us
     return current_user
 
 
-CurrentUserDep = Annotated[User, Depends(get_current_active_user)]
+CurrentActiveUserDep = Annotated[User, Depends(get_current_active_user)]

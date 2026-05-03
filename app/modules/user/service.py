@@ -1,5 +1,7 @@
 from typing import Annotated
 
+from fastapi import Depends
+
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.core.security import hash_password
 from app.modules.role.contracts import AbstractRoleRepository
@@ -15,7 +17,7 @@ def get_user_service(user_repo: UserRepo, role_repo: RoleRepo) -> "UserService":
     return UserService(user_repo=user_repo, role_repo=role_repo)
 
 
-UserServiceDep = Annotated["UserService", get_user_service]
+UserServiceDep = Annotated["UserService", Depends(get_user_service)]
 
 
 class UserService:
