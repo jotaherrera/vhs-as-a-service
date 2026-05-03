@@ -1,6 +1,11 @@
+from typing import Annotated
+
+from fastapi import Depends
+
 from app.core.exceptions import ConflictError
 from app.modules.movie.contracts import AbstractMovieRepository
 from app.modules.movie.model import Movie, MovieExternalId
+from app.modules.movie.repository import MovieRepo
 from app.modules.movie.schemas import (
     MovieCreate,
     MovieResponsePrivate,
@@ -8,6 +13,13 @@ from app.modules.movie.schemas import (
 )
 from app.modules.role.model import RoleName
 from app.modules.user.model import User
+
+
+def get_movie_service(movie_repo: MovieRepo) -> "MovieService":
+    return MovieService(movie_repo=movie_repo)
+
+
+MovieServiceDep = Annotated["MovieService", Depends(get_movie_service)]
 
 
 class MovieService:

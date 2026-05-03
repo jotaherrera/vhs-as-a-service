@@ -1,9 +1,20 @@
+from typing import Annotated
+
+from fastapi import Depends
 from sqlalchemy import Sequence, select
 from sqlalchemy.orm import Session
 
+from app.database.infrastructure.session import DbSession
 from app.modules.movie.contracts import AbstractMovieRepository
 from app.modules.movie.model import Movie, MovieExternalId
 from app.modules.movie.schemas import ExternalId
+
+
+def get_movie_repository(db: DbSession) -> AbstractMovieRepository:
+    return MovieRepository(db)
+
+
+MovieRepo = Annotated[AbstractMovieRepository, Depends(get_movie_repository)]
 
 
 class MovieRepository(AbstractMovieRepository):

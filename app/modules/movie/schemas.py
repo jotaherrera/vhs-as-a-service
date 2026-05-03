@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class MovieResponsePublic(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
     id: int
     title: str
@@ -17,7 +17,7 @@ class MovieResponsePublic(BaseModel):
 
 
 class MovieResponsePrivate(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
     id: int
     title: str
@@ -34,6 +34,8 @@ class MovieResponsePrivate(BaseModel):
 
 
 class MovieList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     movies: list[MovieResponsePublic | MovieResponsePrivate]
     total: int
 
