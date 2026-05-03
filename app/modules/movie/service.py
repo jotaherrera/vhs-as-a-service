@@ -2,7 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from app.core.exceptions import ConflictError
+from app.core.exceptions import ConflictError, NotFoundError
+from app.modules.auth.dependencies import CurrentUserDep
 from app.modules.movie.contracts import AbstractMovieRepository
 from app.modules.movie.model import Movie, MovieExternalId
 from app.modules.movie.repository import MovieRepo
@@ -42,6 +43,19 @@ class MovieService:
             return self.list_movies_for_customer()
 
         return self.list_movies_for_staff()
+
+    def get_by_id(
+        self,
+        current_user: CurrentUserDep,
+        entity_id: int,
+    ) -> MovieResponsePublic | MovieResponsePrivate:
+        movie = self.movie_repo.find_by_id(entity_id)
+        if movie is None:
+            raise NotFoundError(detail="Movie not found")
+
+        if current_user.role.name != RoleName.STAFF:
+            return MovieResponsePublic.model_validate(movie)
+        return MovieResponsePrivate.model_validate(movie)
 
     def create_movie(self, request: MovieCreate) -> Movie:
         for ext in request.external_ids:

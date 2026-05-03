@@ -40,3 +40,46 @@ def test_customer_can_list_movies(db_client: TestClient) -> None:
     assert response.status_code == status.HTTP_200_OK
     movies = [MovieResponsePublic.model_validate(item) for item in response.json()]
     assert len(movies) == 2
+
+
+def test_get_movie_requires_authentication(db_client: TestClient) -> None:
+    response = db_client.get("/api/v1/movies/123")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_get_movie_not_found(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
+    token = create_access_token(data={"sub": str(user.id)})
+    response = db_client.get("/api/v1/movies/456", headers={"Authorization": f"Bearer {token}"})
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_staff_can_get_movie(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
+    token = create_access_token(data={"sub": str(user.id)})
+    movie = MovieFactory.create()
+
+    response = db_client.get(
+        f"/api/v1/movies/{movie.id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    movie = MovieResponsePrivate.model_validate(response.json())
+    assert movie.id == movie.id
+
+
+def test_customer_can_get_movie(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.CUSTOMER))
+    token = create_access_token(data={"sub": str(user.id)})
+    movie = MovieFactory.create()
+
+    response = db_client.get(
+        f"/api/v1/movies/{movie.id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    movie = MovieResponsePublic.model_validate(response.json())
+    assert movie.id == movie.id
