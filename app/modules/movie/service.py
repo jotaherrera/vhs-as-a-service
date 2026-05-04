@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from app.core.exceptions import ConflictError, NotFoundError
+from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.auth.dependencies import CurrentActiveUserDep
 from app.modules.movie.contracts import AbstractMovieRepository
 from app.modules.movie.model import Movie, MovieExternalId
@@ -47,9 +47,9 @@ class MovieService:
     def get_by_id(
         self,
         current_user: CurrentActiveUserDep,
-        entity_id: int,
+        movie_id: int,
     ) -> MovieResponsePublic | MovieResponsePrivate:
-        movie = self.movie_repo.find_by_id(entity_id)
+        movie = self.movie_repo.find_by_id(movie_id)
         if movie is None:
             raise NotFoundError(detail="Movie not found")
 
@@ -57,7 +57,10 @@ class MovieService:
             return MovieResponsePublic.model_validate(movie)
         return MovieResponsePrivate.model_validate(movie)
 
-    def create_movie(self, request: MovieCreate) -> Movie:
+    def register(self, current_user: User, request: MovieCreate) -> MovieResponsePrivate:
+        if current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
         for ext in request.external_ids:
             existing = self.movie_repo.find_by_external_id(ext)
             if existing:
@@ -85,4 +88,4 @@ class MovieService:
             ],
         )
 
-        return self.movie_repo.create(movie)
+        return MovieResponsePrivate.model_validate(self.movie_repo.create(movie))

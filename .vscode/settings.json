@@ -1,39 +1,38 @@
 {
-    "[python]": {
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit",
-            "source.organizeImports": "explicit"
-        },
-        "editor.rulers": [100],
-        "editor.tabSize": 4,
-        "editor.defaultFormatter": "charliermarsh.ruff"
-    },
-    "[shellscript]": {
-        "editor.defaultFormatter": "mkhl.shfmt",
-        "editor.formatOnSave": true
-    },
-    "ruff.organizeImports": true,
-    "ruff.lineLength": 100,
-    "ruff.enable": true,
-    "ruff.lint.enable": true,
-    "python.testing.pytestArgs": [
-        "tests",
-        "-vv",
-        "--asyncio-mode=auto",
-        "--showlocals",
-        "--strict-markers"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "editor.guides.bracketPairs": "active",
-    "editor.tabSize": 2,
-    "files.eol": "\n",
-    "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true,
-    "files.trimTrailingWhitespace": true,
-    "mypy-type-checker.importStrategy": "fromEnvironment",
-    "shfmt.executablePath": ".venv/bin/shfmt",
-    "bashIde.shellcheckPath": ".venv/bin/shellcheck",
-    "shfmt.executableArgs": ["-bn", "-ci", "-i", "2", "-s", "-sr"]
+  "[python]": {
+      "editor.codeActionsOnSave": {
+          "source.fixAll": "explicit",
+          "source.organizeImports": "explicit"
+      },
+      "editor.defaultFormatter": "charliermarsh.ruff",
+      "editor.formatOnSave": true,
+      "editor.rulers": [100],
+      "editor.tabSize": 4
+  },
+  "[shellscript]": {
+      "editor.defaultFormatter": "mkhl.shfmt",
+      "editor.formatOnSave": true
+  },
+  "bashIde.shellcheckPath": ".venv/bin/shellcheck",
+  "editor.guides.bracketPairs": "active",
+  "editor.tabSize": 2,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "python.testing.pytestArgs": [
+      "tests",
+      "-vv",
+      "--asyncio-mode=auto",
+      "--showlocals",
+      "--strict-markers"
+  ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "ruff.enable": true,
+  "ruff.lineLength": 100,
+  "ruff.lint.enable": true,
+  "ruff.organizeImports": true,
+  "shfmt.executableArgs": ["-bn", "-ci", "-i", "2", "-s", "-sr"],
+  "shfmt.executablePath": ".venv/bin/shfmt"
 }

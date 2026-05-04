@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.exceptions import ConflictError
+from app.core.exceptions import ConflictError, ForbiddenError
 from app.modules.movie.model import MovieExternalId
 from app.modules.movie.schemas import (
     ExternalId,
@@ -143,7 +143,28 @@ def test_list_movies_routes_staff_to_private_listing() -> None:
     assert isinstance(result[0], MovieResponsePrivate)
 
 
+def test_non_staff_cannot_add_movie() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    service = MovieService(movie_repo=FakeMovieRepository())
+    request = MovieCreate(
+        title="Inception",
+        description="A thief steals corporate secrets through the use of dream-sharing technology.",
+        genre="sci_fi",
+        director="Christopher Nolan",
+        critic_rating=8,
+        age_rating="PG-13",
+        release_date="2010-07-16",
+        rental_price=3.99,
+        copies_available=4,
+        external_ids=[ExternalId(provider="imdb", external_id="tt1375666")],
+    )
+
+    with pytest.raises(ForbiddenError):
+        service.register(user, request)
+
+
 def test_create_movie_persists_correctly() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
     service = MovieService(movie_repo=FakeMovieRepository())
     request = MovieCreate(
         title="The Matrix",
@@ -158,7 +179,7 @@ def test_create_movie_persists_correctly() -> None:
         external_ids=[ExternalId(provider="imdb", external_id="tt0133093")],
     )
 
-    movie = service.create_movie(request)
+    movie = service.register(user, request)
 
     assert movie.title == "The Matrix"
     assert movie.is_active is True
@@ -168,6 +189,7 @@ def test_create_movie_persists_correctly() -> None:
 
 
 def test_create_movie_raises_conflict_when_external_id_exists() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
     existing = MovieFactory.build(
         external_ids=[MovieExternalId(provider="imdb", external_id="tt0133093")],
     )
@@ -186,10 +208,11 @@ def test_create_movie_raises_conflict_when_external_id_exists() -> None:
     )
 
     with pytest.raises(ConflictError):
-        service.create_movie(request)
+        service.register(user, request)
 
 
 def test_create_movie_conflict_error_includes_provider_and_id() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
     existing = MovieFactory.build(
         external_ids=[MovieExternalId(provider="imdb", external_id="tt0133093")],
     )
@@ -208,13 +231,14 @@ def test_create_movie_conflict_error_includes_provider_and_id() -> None:
     )
 
     with pytest.raises(ConflictError) as exc_info:
-        service.create_movie(request)
+        service.register(user, request)
 
     assert "imdb" in exc_info.value.detail.lower()
     assert "tt0133093" in exc_info.value.detail
 
 
 def test_create_movie_raises_conflict_on_any_matching_external_id() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
     existing = MovieFactory.build(
         external_ids=[MovieExternalId(provider="tmdb", external_id="438631")],
     )
@@ -236,4 +260,4 @@ def test_create_movie_raises_conflict_on_any_matching_external_id() -> None:
     )
 
     with pytest.raises(ConflictError):
-        service.create_movie(request)
+        service.register(user, request)
