@@ -3,6 +3,13 @@ from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class ExternalId(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
+
+    provider: str
+    external_id: str
+
+
 class MovieResponsePublic(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
@@ -31,6 +38,7 @@ class MovieResponsePrivate(BaseModel):
     copies_available: int
     created_at: datetime
     is_active: bool
+    external_ids: list[ExternalId]
 
 
 class MovieList(BaseModel):
@@ -38,11 +46,6 @@ class MovieList(BaseModel):
 
     movies: list[MovieResponsePublic | MovieResponsePrivate]
     total: int
-
-
-class ExternalId(BaseModel):
-    provider: str
-    external_id: str
 
 
 class MovieCreate(BaseModel):

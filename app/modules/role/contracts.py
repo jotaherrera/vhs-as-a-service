@@ -1,11 +1,11 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from sqlalchemy import Sequence
 
 from app.modules.role.model import Role, RoleName
 
 
-class AbstractRoleRepository:
+class AbstractRoleRepository(ABC):
     @abstractmethod
     def get_all(self, *, is_active: bool | None = None) -> Sequence[Role]: ...
 

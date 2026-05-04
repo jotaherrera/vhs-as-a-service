@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from sqlalchemy import Sequence
 
@@ -6,7 +6,7 @@ from app.modules.movie.model import Movie
 from app.modules.movie.schemas import ExternalId
 
 
-class AbstractMovieRepository:
+class AbstractMovieRepository(ABC):
     @abstractmethod
     def get_all(self, *, is_active: bool | None = None) -> Sequence[Movie]: ...
 

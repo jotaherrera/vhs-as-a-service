@@ -1,11 +1,11 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from sqlalchemy import Sequence
 
 from app.modules.user.model import User
 
 
-class AbstractUserRepository:
+class AbstractUserRepository(ABC):
     @abstractmethod
     def get_all(self, *, is_active: bool | None = None) -> Sequence[User]: ...
 
