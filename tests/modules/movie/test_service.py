@@ -293,3 +293,27 @@ def test_modify_movie_successful() -> None:
     assert isinstance(movie, MovieResponsePrivate)
     assert movie.description == "Modified description."
     assert movie.title == "Original Title"
+
+
+def test_non_staff_cannot_remove_movie() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    service = MovieService(movie_repo=FakeMovieRepository())
+
+    with pytest.raises(ForbiddenError):
+        service.remove(user, movie_id=1)
+
+
+def test_remove_movie_nonexistent_id() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    service = MovieService(movie_repo=FakeMovieRepository())
+
+    with pytest.raises(NotFoundError):
+        service.remove(user, movie_id=999)
+
+
+def test_remove_movie_successful() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    existing = MovieFactory.build()
+    service = MovieService(movie_repo=FakeMovieRepository(movies=[existing]))
+
+    service.remove(user, movie_id=existing.id)
