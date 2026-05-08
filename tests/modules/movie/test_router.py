@@ -87,7 +87,7 @@ def test_customer_can_get_movie(db_client: TestClient) -> None:
 
 
 def test_add_movie_requires_authentication(db_client: TestClient) -> None:
-    response = db_client.post("/api/v1/movies")
+    response = db_client.post("/api/v1/movies", json={})
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
@@ -170,3 +170,56 @@ def test_add_movie_returns_conflict_on_duplicate_external_id(db_client: TestClie
     )
 
     assert response.status_code == status.HTTP_409_CONFLICT
+
+
+def test_update_movie_unauthenticated(db_client: TestClient) -> None:
+    response = db_client.patch("/api/v1/movies/1", json={})
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_update_movie_customer_forbidden(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.CUSTOMER))
+    movie = MovieFactory.create()
+
+    token = create_access_token({"sub": str(user.id)})
+
+    response = db_client.patch(
+        f"/api/v1/movies/{movie.id}",
+        json={},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_update_movie_not_found(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
+
+    token = create_access_token({"sub": str(user.id)})
+
+    response = db_client.patch(
+        "/api/v1/movies/999",
+        json={},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_update_movie_staff_success(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
+    movie = MovieFactory.create(title="Original Title")
+
+    token = create_access_token({"sub": str(user.id)})
+
+    response = db_client.patch(
+        f"/api/v1/movies/{movie.id}",
+        json={"description": "New description."},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    movie_response = MovieResponsePrivate.model_validate(response.json())
+    assert movie_response.description == "New description."
+    assert movie_response.title == "Original Title"
