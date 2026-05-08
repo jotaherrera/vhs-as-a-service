@@ -108,3 +108,13 @@ class MovieService:
             setattr(movie, field, value)
 
         return MovieResponsePrivate.model_validate(self.movie_repo.update(movie))
+
+    def remove(self, current_user: User, movie_id: int) -> None:
+        if current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
+        movie = self.movie_repo.find_by_id(movie_id)
+        if movie is None:
+            raise NotFoundError(detail="Movie not found")
+
+        self.movie_repo.delete(movie)
