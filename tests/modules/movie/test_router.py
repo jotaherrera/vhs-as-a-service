@@ -223,3 +223,50 @@ def test_update_movie_staff_success(db_client: TestClient) -> None:
     movie_response = MovieResponsePrivate.model_validate(response.json())
     assert movie_response.description == "New description."
     assert movie_response.title == "Original Title"
+
+
+def test_delete_movie_unauthenticated(db_client: TestClient) -> None:
+    response = db_client.delete("/api/v1/movies/1")
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_delete_movie_customer_forbidden(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.CUSTOMER))
+    movie = MovieFactory.create()
+
+    token = create_access_token({"sub": str(user.id)})
+
+    response = db_client.delete(
+        f"/api/v1/movies/{movie.id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_delete_movie_not_found(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
+
+    token = create_access_token({"sub": str(user.id)})
+
+    response = db_client.delete(
+        "/api/v1/movies/999",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_delete_movie_staff_success(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
+    movie = MovieFactory.create()
+
+    token = create_access_token({"sub": str(user.id)})
+
+    response = db_client.delete(
+        f"/api/v1/movies/{movie.id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
