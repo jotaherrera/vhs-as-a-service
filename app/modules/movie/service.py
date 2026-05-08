@@ -11,6 +11,7 @@ from app.modules.movie.schemas import (
     MovieCreate,
     MovieResponsePrivate,
     MovieResponsePublic,
+    MovieUpdate,
 )
 from app.modules.role.model import RoleName
 from app.modules.user.model import User
@@ -89,3 +90,21 @@ class MovieService:
         )
 
         return MovieResponsePrivate.model_validate(self.movie_repo.create(movie))
+
+    def modify(
+        self,
+        current_user: User,
+        movie_id: int,
+        request: MovieUpdate,
+    ) -> MovieResponsePrivate:
+        if current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
+        movie = self.movie_repo.find_by_id(movie_id)
+        if movie is None:
+            raise NotFoundError(detail="Movie not found")
+
+        for field, value in request.model_dump(exclude_unset=True).items():
+            setattr(movie, field, value)
+
+        return MovieResponsePrivate.model_validate(self.movie_repo.update(movie))
