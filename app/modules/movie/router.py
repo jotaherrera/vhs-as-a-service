@@ -5,6 +5,7 @@ from app.modules.movie.schemas import (
     MovieCreate,
     MovieResponsePrivate,
     MovieResponsePublic,
+    MovieUpdate,
 )
 from app.modules.movie.service import MovieServiceDep
 
@@ -35,3 +36,13 @@ async def add_movie(
     request: MovieCreate,
 ) -> MovieResponsePrivate:
     return service.register(current_user, request)
+
+
+@router.patch("/{movie_id}")
+async def update_movie(
+    service: MovieServiceDep,
+    current_user: CurrentActiveUserDep,
+    movie_id: int,
+    request: MovieUpdate,
+) -> MovieResponsePrivate:
+    return service.modify(current_user, movie_id, request)
