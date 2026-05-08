@@ -46,3 +46,12 @@ async def update_movie(
     request: MovieUpdate,
 ) -> MovieResponsePrivate:
     return service.modify(current_user, movie_id, request)
+
+
+@router.delete("/{movie_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_movie(
+    service: MovieServiceDep,
+    current_user: CurrentActiveUserDep,
+    movie_id: int,
+) -> None:
+    service.remove(current_user, movie_id)
