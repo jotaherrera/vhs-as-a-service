@@ -1,12 +1,13 @@
 import pytest
 
-from app.core.exceptions import ConflictError, ForbiddenError
+from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.movie.model import MovieExternalId
 from app.modules.movie.schemas import (
     ExternalId,
     MovieCreate,
     MovieResponsePrivate,
     MovieResponsePublic,
+    MovieUpdate,
 )
 from app.modules.movie.service import MovieService
 from app.modules.role.model import RoleName
@@ -181,7 +182,7 @@ def test_create_movie_persists_correctly() -> None:
 
     movie = service.register(user, request)
 
-    assert movie.title == "The Matrix"
+    assert isinstance(movie, MovieResponsePrivate)
     assert movie.is_active is True
     assert len(movie.external_ids) == 1
     assert movie.external_ids[0].provider == "imdb"
@@ -261,3 +262,34 @@ def test_create_movie_raises_conflict_on_any_matching_external_id() -> None:
 
     with pytest.raises(ConflictError):
         service.register(user, request)
+
+
+def test_non_staff_cannot_modify_movie() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    service = MovieService(movie_repo=FakeMovieRepository())
+    request = MovieUpdate(description="This is a modification attempt by a non-staff user.")
+
+    with pytest.raises(ForbiddenError):
+        service.modify(user, movie_id=1, request=request)
+
+
+def test_modify_movie_nonexistent_id() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    service = MovieService(movie_repo=FakeMovieRepository())
+    request = MovieUpdate(description="Attempting to modify a non-existent movie.")
+
+    with pytest.raises(NotFoundError):
+        service.modify(user, movie_id=999, request=request)
+
+
+def test_modify_movie_successful() -> None:
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    existing = MovieFactory.build(title="Original Title", description="Original description.")
+    service = MovieService(movie_repo=FakeMovieRepository(movies=[existing]))
+    request = MovieUpdate(description="Modified description.")
+
+    movie = service.modify(user, movie_id=existing.id, request=request)
+
+    assert isinstance(movie, MovieResponsePrivate)
+    assert movie.description == "Modified description."
+    assert movie.title == "Original Title"

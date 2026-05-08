@@ -59,3 +59,16 @@ class MovieCreate(BaseModel):
     rental_price: float
     copies_available: int
     external_ids: list[ExternalId] = Field(min_length=1)
+
+
+class MovieUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    genre: str | None = None
+    director: str | None = None
+    critic_rating: int | None = None
+    age_rating: str | None = None
+    release_date: str | None = None
+    rental_price: float | None = None
+    copies_available: int | None = None
+    external_ids: list[ExternalId] | None = None
