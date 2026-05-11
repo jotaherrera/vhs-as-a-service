@@ -291,6 +291,7 @@ def test_modify_movie_successful() -> None:
     movie = service.modify(user, movie_id=existing.id, request=request)
 
     assert isinstance(movie, MovieResponsePrivate)
+    assert movie.id == existing.id
     assert movie.description == "Modified description."
     assert movie.title == "Original Title"
 
@@ -300,7 +301,7 @@ def test_non_staff_cannot_remove_movie() -> None:
     service = MovieService(movie_repo=FakeMovieRepository())
 
     with pytest.raises(ForbiddenError):
-        service.remove(user, movie_id=1)
+        service.remove(user, movie_id=user.id)
 
 
 def test_remove_movie_nonexistent_id() -> None:
