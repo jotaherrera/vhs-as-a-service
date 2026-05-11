@@ -10,7 +10,7 @@ from app.modules.role.repository import RoleRepo
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
 from app.modules.user.repository import UserRepo
-from app.modules.user.schemas import UserCreate, UserList, UserResponse
+from app.modules.user.schemas import UserCreate, UserList, UserResponse, UserUpdate
 
 
 def get_user_service(user_repo: UserRepo, role_repo: RoleRepo) -> "UserService":
@@ -69,3 +69,26 @@ class UserService:
             raise NotFoundError(detail="User not found")
 
         return UserResponse.model_validate(user)
+
+    def modify(self, current_user: User, user_id: int, request: UserUpdate) -> UserResponse:
+        if current_user.id != user_id and current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
+        user = self.user_repo.find_by_id(user_id)
+        if user is None:
+            raise NotFoundError(detail="User not found")
+
+        for field, value in request.model_dump(exclude_unset=True).items():
+            setattr(user, field, value)
+
+        return UserResponse.model_validate(self.user_repo.update(user))
+
+    def remove(self, current_user: User, user_id: int) -> None:
+        if current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
+        user = self.user_repo.find_by_id(user_id)
+        if user is None:
+            raise NotFoundError(detail="User not found")
+
+        self.user_repo.delete(user)

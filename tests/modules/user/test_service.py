@@ -4,7 +4,7 @@ from pydantic import SecretStr
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.role.model import Role, RoleName
 from app.modules.user.model import User
-from app.modules.user.schemas import UserCreate, UserResponse
+from app.modules.user.schemas import UserCreate, UserResponse, UserUpdate
 from app.modules.user.service import UserService
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
@@ -134,12 +134,12 @@ def test_get_user_profile_staff_can_view_any_profile() -> None:
 
 def test_get_user_profile_raises_forbidden_when_customer_views_other() -> None:
     role = RoleFactory.build(name=RoleName.CUSTOMER)
-    requester = UserFactory.build(role=role)
+    current = UserFactory.build(role=role)
     other = UserFactory.build(role=role)
-    service = make_service(users=[requester, other])
+    service = make_service(users=[current, other])
 
     with pytest.raises(ForbiddenError):
-        service.get_user_profile(current_user=requester, user_id=other.id)
+        service.get_user_profile(current_user=current, user_id=other.id)
 
 
 def test_get_user_profile_raises_not_found_when_user_does_not_exist() -> None:
@@ -148,3 +148,83 @@ def test_get_user_profile_raises_not_found_when_user_does_not_exist() -> None:
 
     with pytest.raises(NotFoundError):
         service.get_user_profile(current_user=staff, user_id=999)
+
+
+def test_modify_staff_updates_user_successfully() -> None:
+    customer_role = RoleFactory.build(name=RoleName.CUSTOMER)
+    staff_role = RoleFactory.build(name=RoleName.STAFF)
+    current = UserFactory.build(role=staff_role)
+    existing = UserFactory.build(name="Existing User", role=customer_role)
+    service = make_service(users=[current, existing], roles=[customer_role, staff_role])
+    request = UserUpdate(name="Modified Name")
+
+    user = service.modify(current_user=current, user_id=existing.id, request=request)
+
+    assert isinstance(user, UserResponse)
+    assert user.id == existing.id
+    assert user.name == "Modified Name"
+    assert user.email == existing.email
+
+
+def test_modify_customer_can_update_own_profile() -> None:
+    role = RoleFactory.build(name=RoleName.CUSTOMER)
+    user = UserFactory.build(name="Existing User", role=role)
+    service = make_service(users=[user], roles=[role])
+    request = UserUpdate(name="Modified Name")
+
+    result = service.modify(current_user=user, user_id=user.id, request=request)
+
+    assert isinstance(result, UserResponse)
+    assert result.id == user.id
+    assert result.name == "Modified Name"
+    assert result.email == user.email
+
+
+def test_modify_customer_cannot_update_other_profile() -> None:
+    role = RoleFactory.build(name=RoleName.CUSTOMER)
+    current = UserFactory.build(name="Requester", role=role)
+    other = UserFactory.build(name="Other User", role=role)
+    service = make_service(users=[current, other], roles=[role])
+    request = UserUpdate(name="Modified Name")
+
+    with pytest.raises(ForbiddenError):
+        service.modify(current_user=current, user_id=other.id, request=request)
+
+
+def test_modify_raises_not_found_when_user_does_not_exist() -> None:
+    role = RoleFactory.build(name=RoleName.STAFF)
+    staff = UserFactory.build(role=role)
+    service = make_service(users=[staff], roles=[role])
+    request = UserUpdate(name="Modified Name")
+
+    with pytest.raises(NotFoundError):
+        service.modify(current_user=staff, user_id=999, request=request)
+
+
+def test_remove_staff_deletes_user_successfully() -> None:
+    customer_role = RoleFactory.build(name=RoleName.CUSTOMER)
+    staff_role = RoleFactory.build(name=RoleName.STAFF)
+    current = UserFactory.build(role=staff_role)
+    existing = UserFactory.build(name="Existing User", role=customer_role)
+    service = make_service(users=[current, existing], roles=[customer_role, staff_role])
+
+    service.remove(current_user=current, user_id=existing.id)
+
+
+def test_remove_customer_cannot_delete_user() -> None:
+    role = RoleFactory.build(name=RoleName.CUSTOMER)
+    current = UserFactory.build(name="Requester", role=role)
+    other = UserFactory.build(name="Other User", role=role)
+    service = make_service(users=[current, other], roles=[role])
+
+    with pytest.raises(ForbiddenError):
+        service.remove(current_user=current, user_id=other.id)
+
+
+def test_remove_raises_not_found_when_user_does_not_exist() -> None:
+    role = RoleFactory.build(name=RoleName.STAFF)
+    staff = UserFactory.build(role=role)
+    service = make_service(users=[staff], roles=[role])
+
+    with pytest.raises(NotFoundError):
+        service.remove(current_user=staff, user_id=999)
