@@ -18,3 +18,10 @@ class RoleResponse(BaseModel):
     created_at: datetime
     modified_at: datetime
     is_active: bool
+
+
+class RoleList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    roles: list[RoleResponse]
+    total: int
