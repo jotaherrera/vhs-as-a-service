@@ -5,11 +5,12 @@ from fastapi import Depends
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
+from app.modules.role.repository import RoleRepo
 from app.modules.role.schemas import RoleCreate, RoleList, RoleResponse
 from app.modules.user.model import User
 
 
-def get_role_service(role_repo: AbstractRoleRepository) -> "RoleService":
+def get_role_service(role_repo: RoleRepo) -> "RoleService":
     return RoleService(role_repo=role_repo)
 
 
