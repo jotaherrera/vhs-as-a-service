@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.modules.rental.model import Rental, RentalStatus
 from app.modules.rental.repository import RentalRepository
+from app.modules.role.model import RoleName
 from tests.fakes.factories.movie import MovieFactory
 from tests.fakes.factories.rental import RentalFactory
+from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
 
 
@@ -215,3 +217,25 @@ def test_find_overdue_returns_empty_when_none_overdue(
     result = rental_repo.find_overdue()
 
     assert result == []
+
+
+def test_delete_soft_deletes_rental(rental_repo: RentalRepository, db_session: Session) -> None:
+    staff_role = RoleFactory(name=RoleName.STAFF)
+    customer_role = RoleFactory(name=RoleName.CUSTOMER)
+    staff = UserFactory(role=staff_role)
+    customer = UserFactory(role=customer_role)
+    movie = MovieFactory()
+    rental = rental_repo.create(
+        RentalFactory.build(
+            customer=customer,
+            staff=staff,
+            movie=movie,
+            status=RentalStatus.ACTIVE,
+        ),
+    )
+
+    rental_repo.delete(rental)
+
+    db_rental = db_session.get(Rental, rental.id)
+    assert db_rental is not None
+    assert db_rental.status == RentalStatus.REMOVED

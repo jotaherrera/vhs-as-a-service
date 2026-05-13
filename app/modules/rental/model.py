@@ -14,6 +14,7 @@ class RentalStatus(StrEnum):
     ACTIVE = "ACTIVE"
     COMPLETED = "COMPLETED"
     LATE = "LATE"
+    REMOVED = "REMOVED"
 
 
 class Rental(Base):
