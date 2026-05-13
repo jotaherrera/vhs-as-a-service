@@ -6,7 +6,7 @@ from app.modules.movie.repository import MovieRepository
 from app.modules.rental.contracts import AbstractRentalRepository
 from app.modules.rental.model import Rental, RentalStatus
 from app.modules.rental.repository import RentalRepository
-from app.modules.rental.schemas import RentalCreate, RentalList, RentalResponse
+from app.modules.rental.schemas import RentalCreate, RentalList, RentalResponse, RentalUpdate
 from app.modules.role.model import RoleName
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
@@ -42,7 +42,14 @@ class RentalService:
             total=len(rentals),
         )
 
-    def register_rental(self, rental_request: RentalCreate) -> RentalResponse:
+    def get_by_id(self, rental_id: int) -> RentalResponse:
+        rental = self.rental_repo.find_by_id(rental_id)
+        if rental is None:
+            raise NotFoundError(detail="Rental not found.")
+
+        return RentalResponse.model_validate(rental)
+
+    def register(self, rental_request: RentalCreate) -> RentalResponse:
         customer = self.user_repo.find_by_id(rental_request.customer_id)
         if customer is None:
             raise NotFoundError(detail="Customer not found.")
@@ -91,3 +98,20 @@ class RentalService:
         self.movie_repo.update(movie)
 
         return RentalResponse.model_validate(self.rental_repo.update(rental))
+
+    def modify(self, rental_id: int, request: RentalUpdate) -> RentalResponse:
+        rental = self.rental_repo.find_by_id(rental_id)
+        if rental is None:
+            raise NotFoundError(detail="Rental not found.")
+
+        for field, value in request.model_dump(exclude_unset=True).items():
+            setattr(rental, field, value)
+
+        return RentalResponse.model_validate(self.rental_repo.update(rental))
+
+    def remove(self, rental_id: int) -> None:
+        rental = self.rental_repo.find_by_id(rental_id)
+        if rental is None:
+            raise NotFoundError(detail="Rental not found.")
+
+        self.rental_repo.delete(rental)

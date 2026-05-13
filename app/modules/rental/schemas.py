@@ -27,6 +27,12 @@ class RentalCreate(BaseModel):
     movie_id: int
 
 
+class RentalUpdate(BaseModel):
+    status: RentalStatus | None = None
+    expected_return_at: datetime | None = None
+    returned_at: datetime | None = None
+
+
 class RentalList(BaseModel):
     rentals: list[RentalResponse]
     total: int
