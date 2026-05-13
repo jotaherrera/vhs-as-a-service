@@ -178,3 +178,6 @@ class FakeRentalRepository(BaseFakeRepository[Rental], AbstractRentalRepository)
     def find_overdue(self) -> Sequence[Rental]:
         now = datetime.now(UTC)
         return [r for r in self.entities.values() if r.expected_return_at < now]
+
+    def delete(self, entity: Rental) -> None:
+        entity.status = RentalStatus.REMOVED

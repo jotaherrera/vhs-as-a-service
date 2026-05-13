@@ -39,3 +39,6 @@ class AbstractRentalRepository(ABC):
 
     @abstractmethod
     def update(self, entity: Rental) -> Rental: ...
+
+    @abstractmethod
+    def delete(self, entity: Rental) -> None: ...
