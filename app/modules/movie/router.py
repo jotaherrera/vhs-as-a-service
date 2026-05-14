@@ -3,6 +3,7 @@ from fastapi import APIRouter, status
 from app.modules.auth.dependencies import CurrentActiveUserDep
 from app.modules.movie.schemas import (
     MovieCreate,
+    MovieList,
     MovieResponsePrivate,
     MovieResponsePublic,
     MovieUpdate,
@@ -13,10 +14,7 @@ router = APIRouter(prefix="/movies", tags=["movies"])
 
 
 @router.get("/")
-async def list_movies(
-    service: MovieServiceDep,
-    current_user: CurrentActiveUserDep,
-) -> list[MovieResponsePublic] | list[MovieResponsePrivate]:
+async def list_movies(service: MovieServiceDep, current_user: CurrentActiveUserDep) -> MovieList:
     return service.list_movies(current_user)
 
 

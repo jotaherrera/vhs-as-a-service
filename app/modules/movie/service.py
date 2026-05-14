@@ -9,6 +9,7 @@ from app.modules.movie.model import Movie, MovieExternalId
 from app.modules.movie.repository import MovieRepo
 from app.modules.movie.schemas import (
     MovieCreate,
+    MovieList,
     MovieResponsePrivate,
     MovieResponsePublic,
     MovieUpdate,
@@ -36,14 +37,13 @@ class MovieService:
         movies = self.movie_repo.get_all()
         return [MovieResponsePrivate.model_validate(m) for m in movies]
 
-    def list_movies(
-        self,
-        current_user: User,
-    ) -> list[MovieResponsePublic] | list[MovieResponsePrivate]:
+    def list_movies(self, current_user: User) -> MovieList:
         if current_user.role.name != RoleName.STAFF:
-            return self.list_movies_for_customer()
+            movies = self.list_movies_for_customer()
+            return MovieList(movies=movies, total=len(movies))
 
-        return self.list_movies_for_staff()
+        movies = self.list_movies_for_staff()
+        return MovieList(movies=movies, total=len(movies))
 
     def get_by_id(
         self,
