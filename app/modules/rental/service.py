@@ -1,24 +1,30 @@
 from datetime import UTC, datetime, timedelta
+from typing import Annotated
+
+from fastapi import Depends
 
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.movie.contracts import AbstractMovieRepository
-from app.modules.movie.repository import MovieRepository
+from app.modules.movie.repository import MovieRepo
 from app.modules.rental.contracts import AbstractRentalRepository
 from app.modules.rental.model import Rental, RentalStatus
-from app.modules.rental.repository import RentalRepository
+from app.modules.rental.repository import RentalRepo
 from app.modules.rental.schemas import RentalCreate, RentalList, RentalResponse, RentalUpdate
 from app.modules.role.model import RoleName
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
-from app.modules.user.repository import UserRepository
+from app.modules.user.repository import UserRepo
 
 
 def get_rental_service(
-    rental_repo: RentalRepository,
-    user_repo: UserRepository,
-    movie_repo: MovieRepository,
+    rental_repo: RentalRepo,
+    user_repo: UserRepo,
+    movie_repo: MovieRepo,
 ) -> "RentalService":
     return RentalService(rental_repo=rental_repo, user_repo=user_repo, movie_repo=movie_repo)
+
+
+RentalServiceDep = Annotated["RentalService", Depends(get_rental_service)]
 
 
 class RentalService:
@@ -42,14 +48,20 @@ class RentalService:
             total=len(rentals),
         )
 
-    def get_by_id(self, rental_id: int) -> RentalResponse:
+    def get_by_id(self, current_user: User, rental_id: int) -> RentalResponse:
         rental = self.rental_repo.find_by_id(rental_id)
         if rental is None:
             raise NotFoundError(detail="Rental not found.")
 
+        if rental.customer_id != current_user.id and current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
         return RentalResponse.model_validate(rental)
 
-    def register(self, rental_request: RentalCreate) -> RentalResponse:
+    def register(self, current_user: User, rental_request: RentalCreate) -> RentalResponse:
+        if current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
         customer = self.user_repo.find_by_id(rental_request.customer_id)
         if customer is None:
             raise NotFoundError(detail="Customer not found.")
@@ -59,8 +71,11 @@ class RentalService:
             raise NotFoundError(detail="Staff not found.")
 
         movie = self.movie_repo.find_by_id(rental_request.movie_id)
-        if movie is None or movie.copies_available <= 0:
-            raise NotFoundError(detail="Movie not available.")
+        if movie is None:
+            raise NotFoundError(detail="Movie not found.")
+
+        if movie.copies_available == 0:
+            raise ConflictError(detail="Movie not available for rental.")
 
         movie.copies_available -= 1
         self.movie_repo.update(movie)
@@ -99,7 +114,10 @@ class RentalService:
 
         return RentalResponse.model_validate(self.rental_repo.update(rental))
 
-    def modify(self, rental_id: int, request: RentalUpdate) -> RentalResponse:
+    def modify(self, current_user: User, rental_id: int, request: RentalUpdate) -> RentalResponse:
+        if current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
         rental = self.rental_repo.find_by_id(rental_id)
         if rental is None:
             raise NotFoundError(detail="Rental not found.")
@@ -109,7 +127,10 @@ class RentalService:
 
         return RentalResponse.model_validate(self.rental_repo.update(rental))
 
-    def remove(self, rental_id: int) -> None:
+    def remove(self, current_user: User, rental_id: int) -> None:
+        if current_user.role.name != RoleName.STAFF:
+            raise ForbiddenError(detail="Not authorized to perform this action")
+
         rental = self.rental_repo.find_by_id(rental_id)
         if rental is None:
             raise NotFoundError(detail="Rental not found.")
