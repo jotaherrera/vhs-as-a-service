@@ -67,7 +67,7 @@ def test_register_rental_success() -> None:
         movie_id=movie.id,
     )
 
-    result = service.register(rental_request)
+    result = service.register(staff, rental_request)
 
     assert result.movie.id == movie.id
     assert result.status == RentalStatus.ACTIVE
@@ -80,6 +80,7 @@ def test_register_rental_decrements_copies_available() -> None:
     service = make_service(users=[staff, customer], movies=[movie])
 
     service.register(
+        staff,
         RentalCreate(customer_id=customer.id, staff_id=staff.id, movie_id=movie.id),
     )
 
@@ -93,17 +94,20 @@ def test_register_rental_raises_not_found_when_customer_missing() -> None:
 
     with pytest.raises(NotFoundError):
         service.register(
+            staff,
             RentalCreate(customer_id=9999, staff_id=staff.id, movie_id=movie.id),
         )
 
 
 def test_register_rental_raises_not_found_when_staff_missing() -> None:
     customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
     movie = MovieFactory.build(copies_available=1)
     service = make_service(users=[customer], movies=[movie])
 
     with pytest.raises(NotFoundError):
         service.register(
+            staff,
             RentalCreate(customer_id=customer.id, staff_id=9999, movie_id=movie.id),
         )
 
@@ -115,19 +119,34 @@ def test_register_rental_raises_not_found_when_movie_not_found() -> None:
 
     with pytest.raises(NotFoundError):
         service.register(
+            staff,
             RentalCreate(customer_id=customer.id, staff_id=staff.id, movie_id=9999),
         )
 
 
-def test_register_rental_raises_not_found_when_movie_has_no_copies() -> None:
+def test_register_rental_raises_conflict_when_movie_has_no_copies() -> None:
     staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
     customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
     movie = MovieFactory.build(copies_available=0)
     service = make_service(users=[staff, customer], movies=[movie])
 
-    with pytest.raises(NotFoundError):
+    with pytest.raises(ConflictError):
         service.register(
+            staff,
             RentalCreate(customer_id=customer.id, staff_id=staff.id, movie_id=movie.id),
+        )
+
+
+def test_register_rental_raises_forbidden_when_not_staff() -> None:
+    customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    other_customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    movie = MovieFactory.build(copies_available=1)
+    service = make_service(users=[customer, other_customer], movies=[movie])
+
+    with pytest.raises(ForbiddenError):
+        service.register(
+            customer,
+            RentalCreate(customer_id=other_customer.id, staff_id=customer.id, movie_id=movie.id),
         )
 
 
@@ -226,7 +245,36 @@ def test_get_by_id_returns_rental() -> None:
     rental = RentalFactory.build(customer=customer, staff=staff, movie=movie)
     service = make_service(users=[staff, customer], movies=[movie], rentals=[rental])
 
-    result = service.get_by_id(rental.id)
+    result = service.get_by_id(customer, rental.id)
+
+    assert isinstance(result, RentalResponse)
+    assert result.id == rental.id
+
+
+def test_get_by_id_raises_forbidden_for_other_customer() -> None:
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    other_customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    movie = MovieFactory.build()
+    rental = RentalFactory.build(customer=customer, staff=staff, movie=movie)
+    service = make_service(
+        users=[staff, customer, other_customer],
+        movies=[movie],
+        rentals=[rental],
+    )
+
+    with pytest.raises(ForbiddenError):
+        service.get_by_id(other_customer, rental.id)
+
+
+def test_staff_can_get_any_rental() -> None:
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    movie = MovieFactory.build()
+    rental = RentalFactory.build(customer=customer, staff=staff, movie=movie)
+    service = make_service(users=[staff, customer], movies=[movie], rentals=[rental])
+
+    result = service.get_by_id(staff, rental.id)
 
     assert isinstance(result, RentalResponse)
     assert result.id == rental.id
@@ -234,16 +282,22 @@ def test_get_by_id_returns_rental() -> None:
 
 def test_get_by_id_raises_not_found_when_missing() -> None:
     service = make_service()
+    user = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
 
     with pytest.raises(NotFoundError):
-        service.get_by_id(9999)
+        service.get_by_id(user, 9999)
 
 
 def test_modify_raises_not_found_when_missing() -> None:
     service = make_service()
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
 
     with pytest.raises(NotFoundError):
-        service.modify(9999, RentalUpdate(expected_return_at=datetime.now(UTC) + timedelta(days=1)))
+        service.modify(
+            staff,
+            9999,
+            RentalUpdate(expected_return_at=datetime.now(UTC) + timedelta(days=1)),
+        )
 
 
 def test_modify_updates_expected_return_at() -> None:
@@ -259,7 +313,7 @@ def test_modify_updates_expected_return_at() -> None:
     service = make_service(users=[staff, customer], movies=[movie], rentals=[rental])
     new_date = datetime.now(UTC) + timedelta(days=14)
 
-    result = service.modify(rental.id, RentalUpdate(expected_return_at=new_date))
+    result = service.modify(staff, rental.id, RentalUpdate(expected_return_at=new_date))
 
     assert isinstance(result, RentalResponse)
     assert result.expected_return_at == new_date
@@ -267,9 +321,10 @@ def test_modify_updates_expected_return_at() -> None:
 
 def test_remove_raises_not_found_when_missing() -> None:
     service = make_service()
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
 
     with pytest.raises(NotFoundError):
-        service.remove(9999)
+        service.remove(staff, 9999)
 
 
 def test_removes_rental_successfully() -> None:
@@ -279,4 +334,4 @@ def test_removes_rental_successfully() -> None:
     rental = RentalFactory.build(customer=customer, staff=staff, movie=movie)
     service = make_service(users=[staff, customer], movies=[movie], rentals=[rental])
 
-    service.remove(rental.id)
+    service.remove(staff, rental.id)

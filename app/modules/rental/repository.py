@@ -1,10 +1,20 @@
 from datetime import UTC, datetime
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy import Sequence, select
 from sqlalchemy.orm import Session
 
+from app.database.infrastructure.session import DbSession
 from app.modules.rental.contracts import AbstractRentalRepository
 from app.modules.rental.model import Rental, RentalStatus
+
+
+def get_rental_repository(db: DbSession) -> AbstractRentalRepository:
+    return RentalRepository(db)
+
+
+RentalRepo = Annotated[AbstractRentalRepository, Depends(get_rental_repository)]
 
 
 class RentalRepository(AbstractRentalRepository):
