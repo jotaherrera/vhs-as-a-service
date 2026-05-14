@@ -44,7 +44,7 @@ class MovieResponsePrivate(BaseModel):
 class MovieList(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    movies: list[MovieResponsePublic | MovieResponsePrivate]
+    movies: list[MovieResponsePublic] | list[MovieResponsePrivate]
     total: int
 
 

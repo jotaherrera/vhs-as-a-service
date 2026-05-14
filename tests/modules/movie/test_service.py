@@ -123,8 +123,8 @@ def test_list_movies_routes_customer_to_public_listing() -> None:
 
     result = service.list_movies(customer)
 
-    assert len(result) == 1
-    assert isinstance(result[0], MovieResponsePublic)
+    assert result.total == 1
+    assert isinstance(result.movies[0], MovieResponsePublic)
 
 
 def test_list_movies_routes_staff_to_private_listing() -> None:
@@ -140,8 +140,8 @@ def test_list_movies_routes_staff_to_private_listing() -> None:
 
     result = service.list_movies(staff)
 
-    assert len(result) == 2
-    assert isinstance(result[0], MovieResponsePrivate)
+    assert result.total == 2
+    assert isinstance(result.movies[0], MovieResponsePrivate)
 
 
 def test_non_staff_cannot_add_movie() -> None:
