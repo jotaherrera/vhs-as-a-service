@@ -40,7 +40,7 @@ def test_list_all_users_returns_all_users_when_staff() -> None:
     other = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
     service = make_service(users=[staff, other])
 
-    result = service.list_all_users(current_user=staff, filters=UserFilters())
+    result = service.list_all_users(current_user=staff)
 
     assert result.total == 2
     assert len(result.users) == 2
@@ -51,7 +51,7 @@ def test_list_all_users_raises_forbidden_when_customer() -> None:
     service = make_service(users=[customer])
 
     with pytest.raises(ForbiddenError):
-        service.list_all_users(current_user=customer, filters=UserFilters())
+        service.list_all_users(current_user=customer)
 
 
 def test_list_all_users_filters_are_forwarded_to_repo() -> None:

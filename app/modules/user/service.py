@@ -29,11 +29,13 @@ class UserService:
         self.user_repo = user_repo
         self.role_repo = role_repo
 
-    def list_all_users(self, current_user: User, filters: UserFilters) -> UserList:
+    def list_all_users(self, current_user: User, filters: UserFilters | None = None) -> UserList:
         if current_user.role.name != RoleName.STAFF:
             raise ForbiddenError(detail="Not authorized to perform this action")
 
-        users = self.user_repo.get_all(filters)
+        active_filters = filters or UserFilters()
+
+        users = self.user_repo.get_all(active_filters)
         return UserList(
             users=[UserResponse.model_validate(user) for user in users],
             total=len(users),
