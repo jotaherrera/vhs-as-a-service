@@ -12,6 +12,14 @@ def list_rentals(service: RentalServiceDep, current_user: CurrentActiveUserDep) 
     return service.list_all_rentals(current_user)
 
 
+@router.get("/me")
+def list_rentals_by_customer(
+    service: RentalServiceDep,
+    current_user: CurrentActiveUserDep,
+) -> RentalList:
+    return service.list_by_customer(current_user.id)
+
+
 @router.get("/{rental_id}")
 def get_rental_by_id(
     service: RentalServiceDep,
