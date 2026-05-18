@@ -238,4 +238,4 @@ def test_delete_soft_deletes_rental(rental_repo: RentalRepository, db_session: S
 
     db_rental = db_session.get(Rental, rental.id)
     assert db_rental is not None
-    assert db_rental.status == RentalStatus.REMOVED
+    assert db_rental.is_active is False

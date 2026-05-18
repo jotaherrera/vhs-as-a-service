@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import ClassVar
 
-from sqlalchemy import DateTime, Enum, ForeignKey
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import Integer
@@ -14,7 +14,6 @@ class RentalStatus(StrEnum):
     ACTIVE = "ACTIVE"
     COMPLETED = "COMPLETED"
     LATE = "LATE"
-    REMOVED = "REMOVED"
 
 
 class Rental(Base):
@@ -46,6 +45,8 @@ class Rental(Base):
         nullable=False,
     )
 
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=true())
+
     customer = relationship(
         "User",
         foreign_keys="[Rental.customer_id]",
@@ -61,6 +62,7 @@ class Rental(Base):
     def __repr__(self) -> str:
         return (
             f"<Rental(id={self.id!r}, "
+            f"is_active={self.is_active}, "
             f"status={self.status!r}, "
             f"movie_id={self.movie_id!r}, "
             f"customer_id={self.customer_id!r}, "

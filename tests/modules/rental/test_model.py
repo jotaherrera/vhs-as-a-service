@@ -6,6 +6,7 @@ def test_rental_string_repr() -> None:
 
     expected = (
         f"<Rental(id={rental.id!r}, "
+        f"is_active={rental.is_active}, "
         f"status={rental.status!r}, "
         f"movie_id={rental.movie_id!r}, "
         f"customer_id={rental.customer_id!r}, "

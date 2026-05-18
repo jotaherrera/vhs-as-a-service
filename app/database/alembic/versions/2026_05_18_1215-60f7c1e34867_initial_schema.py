@@ -1,8 +1,8 @@
 """initial schema.
 
-Revision ID: d1917ffcec0a
+Revision ID: 60f7c1e34867
 Revises:
-Create Date: 2026-05-12 21:24:35.094708
+Create Date: 2026-05-18 12:15:18.715960
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "d1917ffcec0a"
+revision: str = "60f7c1e34867"
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -120,7 +120,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column(
             "status",
-            sa.Enum("ACTIVE", "COMPLETED", "LATE", "REMOVED", name="rental_status", schema="app"),
+            sa.Enum("ACTIVE", "COMPLETED", "LATE", name="rental_status", schema="app"),
             nullable=False,
         ),
         sa.Column("expected_return_at", sa.DateTime(timezone=True), nullable=False),
@@ -140,6 +140,7 @@ def upgrade() -> None:
             server_default=sa.text("now()"),
             nullable=False,
         ),
+        sa.Column("is_active", sa.Boolean(), server_default=sa.text("true"), nullable=False),
         sa.ForeignKeyConstraint(
             ["customer_id"],
             ["app.users.id"],
