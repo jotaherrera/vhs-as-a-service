@@ -22,9 +22,10 @@ class RoleService:
         self.role_repo = role_repo
 
     def list_roles(self, current_user: User, filters: RoleFilters | None = None) -> RoleList:
-        active_filters = filters or RoleFilters()
         if current_user.role.name != RoleName.STAFF:
             raise ForbiddenError(detail="Not authorized to perform this action")
+
+        active_filters = filters or RoleFilters()
 
         roles = [RoleResponse.model_validate(r) for r in self.role_repo.get_all(active_filters)]
         return RoleList(roles=roles, total=len(roles))
