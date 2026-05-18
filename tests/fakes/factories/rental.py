@@ -17,5 +17,6 @@ class RentalFactory(SQLAlchemyModelFactory):
     staff = SubFactory(UserFactory)
     movie = SubFactory(MovieFactory)
     status = RentalStatus.ACTIVE
+    is_active = True
     expected_return_at = LazyFunction(lambda: datetime.now(UTC) + timedelta(days=7))
     returned_at = None

@@ -73,5 +73,5 @@ class RentalRepository(AbstractRentalRepository):
         return entity
 
     def delete(self, entity: Rental) -> None:
-        entity.status = RentalStatus.REMOVED
+        entity.is_active = False
         self.db.commit()

@@ -34,5 +34,7 @@ class RentalUpdate(BaseModel):
 
 
 class RentalList(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     rentals: list[RentalResponse]
     total: int
