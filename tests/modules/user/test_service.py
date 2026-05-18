@@ -4,7 +4,7 @@ from pydantic import SecretStr
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.role.model import Role, RoleName
 from app.modules.user.model import User
-from app.modules.user.schemas import UserCreate, UserResponse, UserUpdate
+from app.modules.user.schemas import UserCreate, UserFilters, UserResponse, UserUpdate
 from app.modules.user.service import UserService
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
@@ -40,7 +40,7 @@ def test_list_all_users_returns_all_users_when_staff() -> None:
     other = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
     service = make_service(users=[staff, other])
 
-    result = service.list_all_users(current_user=staff)
+    result = service.list_all_users(current_user=staff, filters=UserFilters())
 
     assert result.total == 2
     assert len(result.users) == 2
@@ -51,7 +51,19 @@ def test_list_all_users_raises_forbidden_when_customer() -> None:
     service = make_service(users=[customer])
 
     with pytest.raises(ForbiddenError):
-        service.list_all_users(current_user=customer)
+        service.list_all_users(current_user=customer, filters=UserFilters())
+
+
+def test_list_all_users_filters_are_forwarded_to_repo() -> None:
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    active = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER), is_active=True)
+    inactive = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER), is_active=False)
+    fake_repo = FakeUserRepository([staff, active, inactive])
+    service = UserService(user_repo=fake_repo, role_repo=FakeRoleRepository())
+
+    result = service.list_all_users(current_user=staff, filters=UserFilters(is_active=True))
+
+    assert all(u.is_active for u in result.users)
 
 
 def test_register_user_creates_user_successfully() -> None:

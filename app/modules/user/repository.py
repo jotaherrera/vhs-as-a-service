@@ -5,8 +5,10 @@ from sqlalchemy import Select, Sequence
 from sqlalchemy.orm import Session
 
 from app.database.infrastructure.session import DbSession
+from app.modules.role.model import Role
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
+from app.modules.user.schemas import UserFilters
 
 
 def get_user_repository(db: DbSession) -> AbstractUserRepository:
@@ -20,11 +22,13 @@ class UserRepository(AbstractUserRepository):
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_all(self, *, is_active: bool | None = None) -> Sequence[User]:
+    def get_all(self, filters: UserFilters) -> Sequence[User]:
         stmt = Select(User)
 
-        if is_active is not None:
-            stmt = stmt.where(User.is_active.is_(is_active))
+        if filters.is_active is not None:
+            stmt = stmt.where(User.is_active.is_(filters.is_active))
+        if filters.role is not None:
+            stmt = stmt.join(User.role).where(Role.name == filters.role)
 
         return self.db.scalars(stmt).all()
 

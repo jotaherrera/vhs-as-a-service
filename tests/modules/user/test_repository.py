@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.modules.role.model import RoleName
 from app.modules.user.model import User
 from app.modules.user.repository import UserRepository
+from app.modules.user.schemas import UserFilters
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
 
@@ -49,7 +50,7 @@ def test_get_all_returns_all_users_without_filter(user_repo: UserRepository) -> 
     UserFactory.create(is_active=True)
     UserFactory.create(is_active=False)
 
-    result = user_repo.get_all()
+    result = user_repo.get_all(UserFilters())
 
     assert len(result) == 2
 
@@ -58,24 +59,47 @@ def test_get_all_with_is_active_true_returns_only_active(user_repo: UserReposito
     active = UserFactory.create(is_active=True)
     UserFactory.create(is_active=False)
 
-    result = user_repo.get_all(is_active=True)
+    result = user_repo.get_all(UserFilters(is_active=True))
 
     assert len(result) == 1
     assert result[0].id == active.id
     assert result[0].is_active is True
 
 
-def test_get_all_with_is_active_false_returns_only_inactive(
-    user_repo: UserRepository,
-) -> None:
+def test_get_all_with_is_active_false_returns_only_inactive(user_repo: UserRepository) -> None:
     UserFactory.create(is_active=True)
     inactive = UserFactory.create(is_active=False)
 
-    result = user_repo.get_all(is_active=False)
+    result = user_repo.get_all(UserFilters(is_active=False))
 
     assert len(result) == 1
     assert result[0].id == inactive.id
     assert result[0].is_active is False
+
+
+def test_get_all_with_role_returns_only_matching(user_repo: UserRepository) -> None:
+    customer_role = RoleFactory.create(name=RoleName.CUSTOMER)
+    staff_role = RoleFactory.create(name=RoleName.STAFF)
+    customer = UserFactory.create(role=customer_role)
+    UserFactory.create(role=staff_role)
+
+    result = user_repo.get_all(UserFilters(role=RoleName.CUSTOMER))
+
+    assert len(result) == 1
+    assert result[0].id == customer.id
+
+
+def test_get_all_with_combined_filters_returns_matching(user_repo: UserRepository) -> None:
+    customer_role = RoleFactory.create(name=RoleName.CUSTOMER)
+    staff_role = RoleFactory.create(name=RoleName.STAFF)
+    UserFactory.create(role=customer_role, is_active=True)
+    UserFactory.create(role=customer_role, is_active=False)
+    UserFactory.create(role=staff_role, is_active=True)
+
+    result = user_repo.get_all(UserFilters(role=RoleName.CUSTOMER, is_active=True))
+
+    assert len(result) == 1
+    assert result[0].is_active is True
 
 
 def test_create_persists_user_and_returns_it(

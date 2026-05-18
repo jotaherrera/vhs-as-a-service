@@ -12,6 +12,7 @@ from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
+from app.modules.user.schemas import UserFilters
 
 
 class Persistable(Protocol):
@@ -70,10 +71,12 @@ class FakeUserRepository(BaseFakeRepository[User], AbstractUserRepository):
         self.entities[entity.id] = entity
         return entity
 
-    def get_all(self, *, is_active: bool | None = None) -> list[User]:
+    def get_all(self, filters: UserFilters) -> list[User]:
         entities = list(self.entities.values())
-        if is_active is not None:
-            entities = [u for u in entities if u.is_active == is_active]
+        if filters.is_active is not None:
+            entities = [u for u in entities if u.is_active == filters.is_active]
+        if filters.role is not None:
+            entities = [u for u in entities if u.role.name == filters.role]
         return entities
 
     def delete(self, entity: User) -> None:

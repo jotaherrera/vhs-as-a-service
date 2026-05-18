@@ -3,11 +3,12 @@ from abc import ABC, abstractmethod
 from sqlalchemy import Sequence
 
 from app.modules.user.model import User
+from app.modules.user.schemas import UserFilters
 
 
 class AbstractUserRepository(ABC):
     @abstractmethod
-    def get_all(self, *, is_active: bool | None = None) -> Sequence[User]: ...
+    def get_all(self, filters: UserFilters) -> Sequence[User]: ...
 
     @abstractmethod
     def find_by_id(self, entity_id: int) -> User | None: ...
