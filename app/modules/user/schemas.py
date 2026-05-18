@@ -1,5 +1,7 @@
 from datetime import datetime
+from typing import Annotated
 
+from fastapi import Query
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.core.fields import PasswordStr
@@ -38,3 +40,11 @@ class UserResponse(BaseModel):
 class UserList(BaseModel):
     users: list[UserResponse]
     total: int
+
+
+class UserFilters(BaseModel):
+    is_active: bool | None = None
+    role: RoleName | None = None
+
+
+UserFiltersQuery = Annotated[UserFilters, Query()]
