@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import Query
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, computed_field
 
 from app.core.fields import PasswordStr
 from app.modules.role.model import RoleName
@@ -38,8 +38,14 @@ class UserResponse(BaseModel):
 
 
 class UserList(BaseModel):
+    model_config = ConfigDict(extra="forbid", from_attributes=True)
+
     users: list[UserResponse]
-    total: int
+
+    @computed_field
+    @property
+    def total(self) -> int:
+        return len(self.users)
 
 
 class UserFilters(BaseModel):

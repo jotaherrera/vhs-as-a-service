@@ -43,10 +43,7 @@ class RentalService:
             raise ForbiddenError(detail="Not authorized to perform this action")
 
         rentals = self.rental_repo.get_all()
-        return RentalList(
-            rentals=[RentalResponse.model_validate(rental) for rental in rentals],
-            total=len(rentals),
-        )
+        return RentalList(rentals=rentals)
 
     def get_by_id(self, current_user: User, rental_id: int) -> RentalResponse:
         rental = self.rental_repo.find_by_id(rental_id)

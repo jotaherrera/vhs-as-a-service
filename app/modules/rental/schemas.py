@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, computed_field
 
 from app.modules.movie.schemas import MovieResponsePublic
 from app.modules.rental.model import RentalStatus
@@ -34,7 +34,11 @@ class RentalUpdate(BaseModel):
 
 
 class RentalList(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(extra="forbid", from_attributes=True)
 
     rentals: list[RentalResponse]
-    total: int
+
+    @computed_field
+    @property
+    def total(self) -> int:
+        return len(self.rentals)
