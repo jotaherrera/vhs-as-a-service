@@ -3,11 +3,12 @@ from abc import ABC, abstractmethod
 from sqlalchemy import Sequence
 
 from app.modules.role.model import Role, RoleName
+from app.modules.role.schemas import RoleFilters
 
 
 class AbstractRoleRepository(ABC):
     @abstractmethod
-    def get_all(self, *, is_active: bool | None = None) -> Sequence[Role]: ...
+    def get_all(self, filters: RoleFilters) -> Sequence[Role]: ...
 
     @abstractmethod
     def find_by_id(self, entity_id: int) -> Role | None: ...

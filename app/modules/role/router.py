@@ -1,15 +1,19 @@
 from fastapi import APIRouter, status
 
 from app.modules.auth.dependencies import CurrentActiveUserDep
-from app.modules.role.schemas import RoleCreate, RoleList, RoleResponse
+from app.modules.role.schemas import RoleCreate, RoleFiltersQuery, RoleList, RoleResponse
 from app.modules.role.service import RoleServiceDep
 
 router = APIRouter(prefix="/roles", tags=["roles"])
 
 
 @router.get("/")
-async def list_roles(service: RoleServiceDep, current_user: CurrentActiveUserDep) -> RoleList:
-    return service.list_roles(current_user)
+async def list_roles(
+    service: RoleServiceDep,
+    current_user: CurrentActiveUserDep,
+    filters: RoleFiltersQuery,
+) -> RoleList:
+    return service.list_roles(current_user, filters)
 
 
 @router.get("/{role_id}")

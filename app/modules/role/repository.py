@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.database.infrastructure.session import DbSession
 from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
+from app.modules.role.schemas import RoleFilters
 
 
 def get_role_repository(db: DbSession) -> AbstractRoleRepository:
@@ -20,11 +21,11 @@ class RoleRepository(AbstractRoleRepository):
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_all(self, *, is_active: bool | None = None) -> Sequence[Role]:
+    def get_all(self, filters: RoleFilters) -> Sequence[Role]:
         stmt = Select(Role)
 
-        if is_active is not None:
-            stmt = stmt.where(Role.is_active.is_(is_active))
+        if filters.is_active is not None:
+            stmt = stmt.where(Role.is_active.is_(filters.is_active))
 
         return self.db.scalars(stmt).all()
 
