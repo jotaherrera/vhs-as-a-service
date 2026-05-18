@@ -5,7 +5,7 @@ import pytest
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.movie.model import Movie
 from app.modules.rental.model import Rental, RentalStatus
-from app.modules.rental.schemas import RentalCreate, RentalResponse, RentalUpdate
+from app.modules.rental.schemas import RentalCreate, RentalList, RentalResponse, RentalUpdate
 from app.modules.rental.service import RentalService
 from app.modules.role.model import RoleName
 from app.modules.user.model import User
@@ -335,3 +335,22 @@ def test_removes_rental_successfully() -> None:
     service = make_service(users=[staff, customer], movies=[movie], rentals=[rental])
 
     service.remove(staff, rental.id)
+
+
+def test_list_by_customer() -> None:
+    staff = UserFactory.build(role=RoleFactory.build(name=RoleName.STAFF))
+    customer = UserFactory.build(role=RoleFactory.build(name=RoleName.CUSTOMER))
+    rental_1 = RentalFactory.build(customer=customer, staff=staff)
+    rental_2 = RentalFactory.build(customer=customer, staff=staff)
+    unrelated_rental = RentalFactory.build(staff=staff)
+    service = make_service(
+        rentals=[rental_1, rental_2, unrelated_rental],
+        users=[staff, customer, unrelated_rental.customer],
+        movies=[rental_1.movie, rental_2.movie, unrelated_rental.movie],
+    )
+
+    result = service.list_by_customer(customer.id)
+
+    assert isinstance(result, RentalList)
+    assert len(result.rentals) == 2
+    assert result.total == 2
