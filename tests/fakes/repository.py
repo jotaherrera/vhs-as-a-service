@@ -10,6 +10,7 @@ from app.modules.rental.contracts import AbstractRentalRepository
 from app.modules.rental.model import Rental, RentalStatus
 from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
+from app.modules.role.schemas import RoleFilters
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
 from app.modules.user.schemas import UserFilters
@@ -90,10 +91,10 @@ class FakeRoleRepository(BaseFakeRepository[Role], AbstractRoleRepository):
     def __init__(self, roles: list[Role] | None = None) -> None:
         super().__init__(entities=roles)
 
-    def get_all(self, *, is_active: bool | None = None) -> list[Role]:
+    def get_all(self, filters: RoleFilters) -> list[Role]:
         entities = list(self.entities.values())
-        if is_active is not None:
-            entities = [r for r in entities if r.is_active == is_active]
+        if filters.is_active is not None:
+            entities = [r for r in entities if r.is_active == filters.is_active]
         return entities
 
     def delete(self, entity: Role) -> None:

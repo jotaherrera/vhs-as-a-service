@@ -6,7 +6,7 @@ from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.role.contracts import AbstractRoleRepository
 from app.modules.role.model import Role, RoleName
 from app.modules.role.repository import RoleRepo
-from app.modules.role.schemas import RoleCreate, RoleList, RoleResponse
+from app.modules.role.schemas import RoleCreate, RoleFilters, RoleList, RoleResponse
 from app.modules.user.model import User
 
 
@@ -21,11 +21,12 @@ class RoleService:
     def __init__(self, role_repo: AbstractRoleRepository) -> None:
         self.role_repo = role_repo
 
-    def list_roles(self, current_user: User) -> RoleList:
+    def list_roles(self, current_user: User, filters: RoleFilters | None = None) -> RoleList:
+        active_filters = filters or RoleFilters()
         if current_user.role.name != RoleName.STAFF:
             raise ForbiddenError(detail="Not authorized to perform this action")
 
-        roles = [RoleResponse.model_validate(r) for r in self.role_repo.get_all()]
+        roles = [RoleResponse.model_validate(r) for r in self.role_repo.get_all(active_filters)]
         return RoleList(roles=roles, total=len(roles))
 
     def get_by_id(self, current_user: User, role_id: int) -> RoleResponse:

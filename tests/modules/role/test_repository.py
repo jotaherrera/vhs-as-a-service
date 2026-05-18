@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.modules.role.model import Role, RoleName
 from app.modules.role.repository import RoleRepository
+from app.modules.role.schemas import RoleFilters
 from tests.fakes.factories.role import RoleFactory
 
 
@@ -47,7 +48,7 @@ def test_get_all_returns_all_roles_without_filter(role_repo: RoleRepository) -> 
     RoleFactory.create(name=RoleName.STAFF)
     RoleFactory.create(name=RoleName.CUSTOMER)
 
-    result = role_repo.get_all()
+    result = role_repo.get_all(RoleFilters())
 
     assert len(result) == 2
 
@@ -56,7 +57,7 @@ def test_get_all_with_is_active_true_returns_only_active(role_repo: RoleReposito
     active = RoleFactory.create(name=RoleName.STAFF, is_active=True)
     RoleFactory.create(name=RoleName.CUSTOMER, is_active=False)
 
-    result = role_repo.get_all(is_active=True)
+    result = role_repo.get_all(RoleFilters(is_active=True))
 
     assert len(result) == 1
     assert result[0].id == active.id
@@ -69,7 +70,7 @@ def test_get_all_with_is_active_false_returns_only_inactive(
     RoleFactory.create(name=RoleName.STAFF, is_active=True)
     inactive = RoleFactory.create(name=RoleName.CUSTOMER, is_active=False)
 
-    result = role_repo.get_all(is_active=False)
+    result = role_repo.get_all(RoleFilters(is_active=False))
 
     assert len(result) == 1
     assert result[0].id == inactive.id
