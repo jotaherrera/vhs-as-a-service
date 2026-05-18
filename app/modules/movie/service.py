@@ -39,11 +39,9 @@ class MovieService:
 
     def list_movies(self, current_user: User) -> MovieList:
         if current_user.role.name != RoleName.STAFF:
-            movies = self.list_movies_for_customer()
-            return MovieList(movies=movies, total=len(movies))
+            return MovieList(movies=self.list_movies_for_customer())
 
-        movies = self.list_movies_for_staff()
-        return MovieList(movies=movies, total=len(movies))
+        return MovieList(movies=self.list_movies_for_staff())
 
     def get_by_id(
         self,

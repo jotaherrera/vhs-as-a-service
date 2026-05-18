@@ -27,8 +27,7 @@ class RoleService:
 
         active_filters = filters or RoleFilters()
 
-        roles = [RoleResponse.model_validate(r) for r in self.role_repo.get_all(active_filters)]
-        return RoleList(roles=roles, total=len(roles))
+        return RoleList(roles=self.role_repo.get_all(active_filters))
 
     def get_by_id(self, current_user: User, role_id: int) -> RoleResponse:
         if current_user.role.name != RoleName.STAFF:

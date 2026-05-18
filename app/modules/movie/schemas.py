@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class ExternalId(BaseModel):
@@ -42,10 +42,14 @@ class MovieResponsePrivate(BaseModel):
 
 
 class MovieList(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", from_attributes=True)
 
     movies: list[MovieResponsePublic] | list[MovieResponsePrivate]
-    total: int
+
+    @computed_field
+    @property
+    def total(self) -> int:
+        return len(self.movies)
 
 
 class MovieCreate(BaseModel):

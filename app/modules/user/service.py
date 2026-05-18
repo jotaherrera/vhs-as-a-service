@@ -35,11 +35,7 @@ class UserService:
 
         active_filters = filters or UserFilters()
 
-        users = self.user_repo.get_all(active_filters)
-        return UserList(
-            users=[UserResponse.model_validate(user) for user in users],
-            total=len(users),
-        )
+        return UserList(users=self.user_repo.get_all(active_filters))
 
     def register_user(self, user_request: UserCreate) -> UserResponse:
         potential_user = self.user_repo.find_by_email(user_request.email)

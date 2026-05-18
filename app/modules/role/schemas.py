@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import Query
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, computed_field
 
 from app.modules.role.model import RoleName
 
@@ -23,10 +23,14 @@ class RoleResponse(BaseModel):
 
 
 class RoleList(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    ConfigDict(extra="forbid", from_attributes=True)
 
     roles: list[RoleResponse]
-    total: int
+
+    @computed_field
+    @property
+    def total(self) -> int:
+        return len(self.roles)
 
 
 class RoleFilters(BaseModel):
