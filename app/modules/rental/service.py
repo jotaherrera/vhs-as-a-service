@@ -45,6 +45,9 @@ class RentalService:
         rentals = self.rental_repo.get_all()
         return RentalList(rentals=rentals)
 
+    def list_by_customer(self, customer_id: int) -> RentalList:
+        return RentalList(rentals=self.rental_repo.find_by_customer(customer_id))
+
     def get_by_id(self, current_user: User, rental_id: int) -> RentalResponse:
         rental = self.rental_repo.find_by_id(rental_id)
         if rental is None:
