@@ -275,3 +275,13 @@ def test_staff_can_delete_rental(db_client: TestClient) -> None:
     )
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_list_rental_by_customer(db_client: TestClient) -> None:
+    user = UserFactory.create(role=RoleFactory.create(name=RoleName.CUSTOMER))
+
+    token = create_access_token(data={"sub": str(user.id)})
+
+    response = db_client.get("/api/v1/rentals/me", headers={"Authorization": f"Bearer {token}"})
+
+    assert response.status_code == status.HTTP_200_OK
