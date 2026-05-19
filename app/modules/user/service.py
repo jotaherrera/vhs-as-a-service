@@ -10,7 +10,14 @@ from app.modules.role.repository import RoleRepo
 from app.modules.user.contracts import AbstractUserRepository
 from app.modules.user.model import User
 from app.modules.user.repository import UserRepo
-from app.modules.user.schemas import UserCreate, UserFilters, UserList, UserResponse, UserUpdate
+from app.modules.user.schemas import (
+    UserCreate,
+    UserFilters,
+    UserList,
+    UserQueryParams,
+    UserResponse,
+    UserUpdate,
+)
 
 
 def get_user_service(user_repo: UserRepo, role_repo: RoleRepo) -> "UserService":
@@ -29,13 +36,20 @@ class UserService:
         self.user_repo = user_repo
         self.role_repo = role_repo
 
-    def list_all_users(self, current_user: User, filters: UserFilters | None = None) -> UserList:
+    def list_all_users(
+        self,
+        current_user: User,
+        query_params: UserQueryParams | None = None,
+    ) -> UserList:
         if current_user.role.name != RoleName.STAFF:
             raise ForbiddenError(detail="Not authorized to perform this action")
 
-        active_filters = filters or UserFilters()
+        internal_filters = UserFilters(
+            **(query_params.model_dump() if query_params else {}),
+            is_active=True,
+        )
 
-        return UserList(users=self.user_repo.get_all(active_filters))
+        return UserList(users=self.user_repo.get_all(internal_filters))
 
     def register_user(self, user_request: UserCreate) -> UserResponse:
         potential_user = self.user_repo.find_by_email(user_request.email)

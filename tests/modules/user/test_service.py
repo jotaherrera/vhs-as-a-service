@@ -4,7 +4,7 @@ from pydantic import SecretStr
 from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.modules.role.model import Role, RoleName
 from app.modules.user.model import User
-from app.modules.user.schemas import UserCreate, UserFilters, UserResponse, UserUpdate
+from app.modules.user.schemas import UserCreate, UserResponse, UserUpdate
 from app.modules.user.service import UserService
 from tests.fakes.factories.role import RoleFactory
 from tests.fakes.factories.user import UserFactory
@@ -61,7 +61,7 @@ def test_list_all_users_filters_are_forwarded_to_repo() -> None:
     fake_repo = FakeUserRepository([staff, active, inactive])
     service = UserService(user_repo=fake_repo, role_repo=FakeRoleRepository())
 
-    result = service.list_all_users(current_user=staff, filters=UserFilters(is_active=True))
+    result = service.list_all_users(current_user=staff)
 
     assert all(u.is_active for u in result.users)
 

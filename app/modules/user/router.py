@@ -3,8 +3,8 @@ from fastapi import APIRouter, status
 from app.modules.auth.dependencies import CurrentActiveUserDep
 from app.modules.user.schemas import (
     UserCreate,
-    UserFiltersQuery,
     UserList,
+    UserQueryDep,
     UserResponse,
     UserUpdate,
 )
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 async def list_users(
     service: UserServiceDep,
     current_user: CurrentActiveUserDep,
-    filters: UserFiltersQuery,
+    filters: UserQueryDep,
 ) -> UserList:
     return service.list_all_users(current_user, filters)
 
