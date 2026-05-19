@@ -28,38 +28,6 @@ def test_list_users_customer(db_client: TestClient) -> None:
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_list_users_filter_by_is_active_true(db_client: TestClient) -> None:
-    staff = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
-    UserFactory.create(is_active=True)
-    UserFactory.create(is_active=False)
-
-    token = create_access_token({"sub": str(staff.id)})
-
-    response = db_client.get(
-        "/api/v1/users",
-        params={"is_active": True},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-
-
-def test_list_users_filter_by_is_active_false(db_client: TestClient) -> None:
-    staff = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
-    UserFactory.create(is_active=True)
-    UserFactory.create(is_active=False)
-
-    token = create_access_token({"sub": str(staff.id)})
-
-    response = db_client.get(
-        "/api/v1/users",
-        params={"is_active": False},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-
-
 def test_list_users_filter_by_role(db_client: TestClient) -> None:
     staff = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
     UserFactory.create(role=RoleFactory.create(name=RoleName.CUSTOMER))
@@ -69,23 +37,6 @@ def test_list_users_filter_by_role(db_client: TestClient) -> None:
     response = db_client.get(
         "/api/v1/users",
         params={"role": RoleName.CUSTOMER},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-
-
-def test_list_users_filter_combined(db_client: TestClient) -> None:
-    staff = UserFactory.create(role=RoleFactory.create(name=RoleName.STAFF))
-    customer_role = RoleFactory.create(name=RoleName.CUSTOMER)
-    UserFactory.create(role=customer_role, is_active=True)
-    UserFactory.create(role=customer_role, is_active=False)
-
-    token = create_access_token({"sub": str(staff.id)})
-
-    response = db_client.get(
-        "/api/v1/users",
-        params={"role": RoleName.CUSTOMER, "is_active": True},
         headers={"Authorization": f"Bearer {token}"},
     )
 

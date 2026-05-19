@@ -48,9 +48,12 @@ class UserList(BaseModel):
         return len(self.users)
 
 
-class UserFilters(BaseModel):
-    is_active: bool | None = None
+class UserQueryParams(BaseModel):
     role: RoleName | None = None
 
 
-UserFiltersQuery = Annotated[UserFilters, Query()]
+class UserFilters(UserQueryParams):
+    is_active: bool | None = None
+
+
+UserQueryDep = Annotated[UserQueryParams, Query()]
