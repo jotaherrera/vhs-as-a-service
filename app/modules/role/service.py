@@ -21,13 +21,13 @@ class RoleService:
     def __init__(self, role_repo: AbstractRoleRepository) -> None:
         self.role_repo = role_repo
 
-    def list_roles(self, current_user: User, filters: RoleFilters | None = None) -> RoleList:
+    def list_roles(self, current_user: User) -> RoleList:
         if current_user.role.name != RoleName.STAFF:
             raise ForbiddenError(detail="Not authorized to perform this action")
 
-        active_filters = filters or RoleFilters()
+        internal_filters = RoleFilters(is_active=True)
 
-        return RoleList(roles=self.role_repo.get_all(active_filters))
+        return RoleList(roles=self.role_repo.get_all(internal_filters))
 
     def get_by_id(self, current_user: User, role_id: int) -> RoleResponse:
         if current_user.role.name != RoleName.STAFF:

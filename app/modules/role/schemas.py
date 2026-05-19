@@ -1,7 +1,5 @@
 from datetime import datetime
-from typing import Annotated
 
-from fastapi import Query
 from pydantic import BaseModel, ConfigDict, computed_field
 
 from app.modules.role.model import RoleName
@@ -35,6 +33,3 @@ class RoleList(BaseModel):
 
 class RoleFilters(BaseModel):
     is_active: bool | None = None
-
-
-RoleFiltersQuery = Annotated[RoleFilters, Query()]
